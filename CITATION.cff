@@ -9,7 +9,7 @@ authors:
   - family-names: Jayaram
     given-names: B.
     affiliation: "Indian Institute of Technology Delhi"
-repository-code: "https://github.com/ORG/genome-reader"   # TODO set URL
+repository-code: "https://github.com/DanishAslam7/genome-reader"
 license: MIT
 version: "1.0.0"
 date-released: "2026-XX-XX"                                 # TODO

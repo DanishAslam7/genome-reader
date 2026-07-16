@@ -9,6 +9,7 @@ The representation transfers across kingdoms as well as sequence does, and *bett
 matched-training sequence model on organisms as distant as prokaryotes; channel ablation resolves
 which physical property encodes which element.
 
+> **Repository:** https://github.com/DanishAslam7/genome-reader
 > **Persistent archive:** the citable version of this code, together with trained model weights and
 > the exact split indices needed to reproduce every comparison, is deposited at
 > **[Zenodo DOI — to be minted]**. This GitHub repository is the working mirror.
