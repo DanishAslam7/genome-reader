@@ -479,9 +479,8 @@ def build_kg(
 
 def parse_args():
     p = argparse.ArgumentParser(description="Build genomic biophysical KG")
-    p.add_argument("--root",
-                   default="/ibdc-scratch2/home/IBDCHPCU0135/danish/genome_reader",
-                   help="Root directory of genome_reader project")
+    p.add_argument("--root", default=".",
+                   help="Root directory of the genome_reader project (holds metadata.parquet etc.)")
     p.add_argument("--meta",     default=None,
                    help="Path to metadata.parquet (default: <root>/metadata.parquet)")
     p.add_argument("--hotspots", default=None,

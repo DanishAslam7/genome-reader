@@ -7,9 +7,9 @@ the sources the model was built FROM, so it is accurate by construction. This sc
 closes the loop by reading the graph back out of a saved checkpoint: layer names,
 types, output shapes and parameter counts, plus the per-head wiring.
 
-Must run on a compute node: the head node's Keras cannot deserialize these
-checkpoints (saved by a newer Keras -> "No module named 'keras.src'"), and only the
-compute nodes mount /ibdc-scratch2 where the genome_reader_tf env lives.
+Run wherever the trained-model environment (matching Keras/TensorFlow versions)
+is available: an older head-node Keras cannot deserialize checkpoints saved by a
+newer Keras ("No module named 'keras.src'").
 
   python dump_model_summary.py --run-dir <run> --out model_summary_out
 """
