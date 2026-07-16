@@ -1,4 +1,4 @@
-# Genome Reader — biophysical profiles as a universal, interpretable genomic code
+# Genome Reader - biophysical profiles as a universal, interpretable genomic code
 
 Code for *"[paper title], Aslam et al."* (Nucleic Acids Research, submitted).
 
