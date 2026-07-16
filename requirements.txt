@@ -1,0 +1,18 @@
+# Core (training + evaluation) — TensorFlow stack, CUDA 12.4
+tensorflow==2.15.0        # adjust to the build used on your cluster
+numpy<2
+pandas
+scikit-learn
+pyarrow
+
+# Figures
+matplotlib
+pillow
+
+# DNA language-model finetuning (separate env; PyTorch stack) — see finetune_dnalm.py
+#   torch==2.2.2
+#   transformers==4.44.2
+#   datasets
+#   accelerate
+#   einops
+# NOTE numpy<2 is required for the TF stack; pin it in both environments.

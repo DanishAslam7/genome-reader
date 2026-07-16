@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the article and this repository."
+title: "Genome Reader: biophysical profiles as a universal, interpretable genomic code"
+authors:
+  - family-names: Aslam
+    given-names: Danish
+    affiliation: "Indian Institute of Technology Delhi"
+  # TODO confirm full author list and order before release (see paper front matter)
+  - family-names: Jayaram
+    given-names: B.
+    affiliation: "Indian Institute of Technology Delhi"
+repository-code: "https://github.com/ORG/genome-reader"   # TODO set URL
+license: MIT
+version: "1.0.0"
+date-released: "2026-XX-XX"                                 # TODO
+preferred-citation:
+  type: article
+  title: "TODO — paper title"
+  authors:
+    - family-names: Aslam
+      given-names: Danish
+    - family-names: Jayaram
+      given-names: B.
+  journal: "Nucleic Acids Research"
+  year: 2026
+  # doi: 10.1093/nar/XXXXXX   # TODO on acceptance
+references:
+  - type: article
+    title: "Structure and dynamics dictate the functional destiny of genomic DNA across multiple organisms"
+    authors:
+      - family-names: Sharma
+        given-names: Dinesh
+      - family-names: Aslam
+        given-names: Danish
+      - family-names: Mittal
+        given-names: Aditya
+      - family-names: Jayaram
+        given-names: B.
+    journal: "International Journal of Biological Macromolecules"
+    volume: 329
+    year: 2025
+    start: 147488
+    doi: 10.1016/j.ijbiomac.2025.147488

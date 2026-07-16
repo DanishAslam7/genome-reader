@@ -1,0 +1,44 @@
+# ── Large data artefacts — NEVER commit (regenerable / Zenodo / on request) ──
+# Profile tensors and datasets (the full tensor is ~184 GB)
+*.npy
+*.npz
+dataset_*/
+*.parquet
+
+# Trained models and run outputs
+*.keras
+*.h5
+checkpoints/
+taxonomy_multitask_out_run_*/
+*_out/
+model_summary_out/
+norm_ablation_out/
+param_ablation_out/
+
+# Training / job logs (the full set is ~38 GB — these are results, kept off-repo)
+*.log
+*_pbs.txt
+*_pbs.err
+
+# Genome sequences and profiles (public via NCBI accessions in the paper)
+*.fasta
+*.fa
+*.fna
+*.gff
+*.gtf
+prokaryotes/
+*_profiles/
+*_total_seq*
+
+# ── Rendered figure outputs — commit the SCRIPTS, not the bitmaps ──
+figures/*.pdf
+figures/*.png
+!figures/phylopic/*.png          # keep the input silhouettes (public domain)
+
+# ── Python / environment cruft ──
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.DS_Store
