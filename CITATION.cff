@@ -10,8 +10,8 @@ authors:
     given-names: B.
     affiliation: "Indian Institute of Technology Delhi"
 repository-code: "https://github.com/DanishAslam7/genome-reader"
-doi: "10.5281/zenodo.21400172"          # Zenodo concept DOI (all versions) — CONFIRM this is the
-                                        # "Cite all versions" DOI, not the v1.0.0-specific one
+doi: "10.5281/zenodo.21400171"          # Zenodo CONCEPT DOI (all versions; resolves to latest).
+                                        # The v1.0.0-specific version DOI is 10.5281/zenodo.21400172.
 license: MIT
 version: "1.0.0"
 date-released: "2026-07-16"

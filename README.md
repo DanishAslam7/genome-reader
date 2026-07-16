@@ -10,8 +10,8 @@ matched-training sequence model on organisms as distant as prokaryotes; channel 
 which physical property encodes which element.
 
 > **Repository:** https://github.com/DanishAslam7/genome-reader
-> **Archived code:** https://doi.org/10.5281/zenodo.21400172 (Zenodo — this GitHub repository is the
-> working mirror; each release is snapshotted there).
+> **Archived code:** https://doi.org/10.5281/zenodo.21400171 (Zenodo concept DOI — always resolves to
+> the latest version; this GitHub repository is the working mirror, snapshotted at each release).
 > **Trained model weights and the exact split indices needed to reproduce every comparison** are
 > deposited as a separate Zenodo record — **[weights DOI — to be minted]** — because they are too
 > large for the code repository.
