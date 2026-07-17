@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Biophysical Knowledge Graph — 3D</title>
-<meta name="description" content="Interactive 3D rendering of the biophysical knowledge graph, with the full node and edge tables downloadable as CSV.">
+<meta name="description" content="Interactive 3D biophysical knowledge graph with downloadable node/edge CSVs.">
 </head>
 <body>
 <style>
@@ -103,7 +103,8 @@
   .dldesc{font-size:10.5px; color:var(--muted); line-height:1.45; margin-bottom:8px}
   .dlbtn{display:block; width:100%; margin-top:6px; padding:7px 8px; border-radius:8px;
     border:1px solid var(--line); background:var(--chip); color:var(--ink); cursor:pointer;
-    font-size:11.5px; font-family:inherit; font-variant-numeric:tabular-nums; text-align:left}
+    font-size:11.5px; font-family:inherit; font-variant-numeric:tabular-nums; text-align:left;
+    text-decoration:none; box-sizing:border-box}
   .dlbtn:hover{border-color:var(--k-organism); color:var(--k-organism)}
   .note{margin-top:13px; padding-top:12px; border-top:1px solid var(--hair); font-size:11px; line-height:1.5; color:var(--muted)}
   .note b{color:var(--ink); font-weight:600}
@@ -161,8 +162,8 @@
       <h2>Download the graph</h2>
       <div class="dldesc">The complete graph as CSV — nodes (type, name, profile stats) and edges
         (relation, per-organism profile means, correlation r).</div>
-      <button class="dlbtn" id="dlNodes">&#8595; Nodes &nbsp;(1,757 &times; 27)</button>
-      <button class="dlbtn" id="dlEdges">&#8595; Edges &nbsp;(7,265 &times; 12)</button>
+      <a class="dlbtn" id="dlNodes" download="kg_nodes.csv" href="#" target="_blank" rel="noopener">&#8595; Nodes &nbsp;(1,757 &times; 27)</a>
+      <a class="dlbtn" id="dlEdges" download="kg_edges.csv" href="#" target="_blank" rel="noopener">&#8595; Edges &nbsp;(7,265 &times; 12)</a>
     </div>
 
     <div class="note">
@@ -343,16 +344,16 @@ const EDGES_B64 = "c291cmNlLHRhcmdldCxlZGdlX3R5cGUscmVsYXRpb24sbl9zZXF1ZW5jZXMsb
 
   new MutationObserver(readTheme).observe(root,{attributes:true,attributeFilter:["data-theme"]});
   window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",readTheme);
-  // ---- download the full KG as CSV (embedded, base64) ----
-  function dlB64(b64, fname){
+  // ---- download the full KG as CSV (embedded) ----
+  // Real <a download> with a blob object URL — the most broadly permitted download
+  // path (works on GitHub Pages / locally; a sandboxed preview may still block it).
+  function blobUrl(b64){
     const bin=atob(b64), bytes=new Uint8Array(bin.length);
     for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-    const u=URL.createObjectURL(new Blob([bytes],{type:"text/csv"}));
-    const a=document.createElement("a"); a.href=u; a.download=fname;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);
+    return URL.createObjectURL(new Blob([bytes],{type:"text/csv"}));
   }
-  document.getElementById("dlNodes").addEventListener("click",()=>dlB64(NODES_B64,"kg_nodes.csv"));
-  document.getElementById("dlEdges").addEventListener("click",()=>dlB64(EDGES_B64,"kg_edges.csv"));
+  document.getElementById("dlNodes").href=blobUrl(NODES_B64);
+  document.getElementById("dlEdges").href=blobUrl(EDGES_B64);
 
   resize(); requestAnimationFrame(draw);
 })();
