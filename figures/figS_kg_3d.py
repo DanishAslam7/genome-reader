@@ -146,7 +146,13 @@ out_nodes = [{"t": ntype[n], "n": nname[n] if ntype[n] != "hotspot" else "",
               "d": int(G.degree[n]),
               "x": round(float(P[idx[n]][0]), 4), "y": round(float(P[idx[n]][1]), 4),
               "z": round(float(P[idx[n]][2]), 4)} for n in G.nodes]
-out_edges = [{"s": idx[u], "t": idx[v], "k": kind(u, v, d)} for u, v, d in G.edges(data=True)]
+def edge_rec(u, v, d):
+    k = kind(u, v, d)
+    rec = {"s": idx[u], "t": idx[v], "k": k}
+    if k in ("corr_pos", "corr_neg") and d.get("r") is not None:
+        rec["r"] = round(float(d["r"]), 3)
+    return rec
+out_edges = [edge_rec(u, v, d) for u, v, d in G.edges(data=True)]
 with open("figures/kg_3d_data.json", "w") as fh:
     json.dump({"nodes": out_nodes, "edges": out_edges,
                "counts": {"kingdom": 4, "organism": 32, "element": 14, "parameter": 7, "hotspot": 1700},
