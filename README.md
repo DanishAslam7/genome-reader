@@ -9,6 +9,10 @@ The representation transfers across kingdoms as well as sequence does, and *bett
 matched-training sequence model on organisms as distant as prokaryotes; channel ablation resolves
 which physical property encodes which element.
 
+> **▶ Interactive 3D knowledge graph (live):**
+> https://danishaslam7.github.io/genome-reader/figures/kg_3d.html — rotate the actual 1,757-node graph
+> in your browser.
+>
 > **Repository:** https://github.com/DanishAslam7/genome-reader
 > **Archived code:** https://doi.org/10.5281/zenodo.21400171 (Zenodo concept DOI — always resolves to
 > the latest version; this GitHub repository is the working mirror, snapshotted at each release).
