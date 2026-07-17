@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Graphical abstract — static, publication-ready.
+Graphical abstract - static, publication-ready.
 
 Three honest beats, left to right:
-  (1) input   — DNA read as physics: 7 biophysical parameters, no sequence
-  (2) model   — the multitask CNN in 3D; gradient reversal -> species-invariant
-  (3) result  — the real transfer-distance gradient + the mechanism finding
+  (1) input   - DNA read as physics: 7 biophysical parameters, no sequence
+  (2) model   - the multitask CNN in 3D; gradient reversal -> species-invariant
+  (3) result  - the real transfer-distance gradient + the mechanism finding
 
 All numbers from RESULTS_LEDGER.md. 3D blocks use the interactive figure's projection.
 
@@ -29,7 +29,7 @@ ax.set_autoscale_on(False)
 
 ax.text(3,94.5,"DNA biophysical structure is a universal, interpretable genomic code",
         fontsize=18.5,fontweight="bold",color=INK)
-ax.text(3,89.6,"A multitask network predicts genomic elements from DNA mechanics alone — "
+ax.text(3,89.6,"A multitask network predicts genomic elements from DNA mechanics alone - "
         "across 32 organisms and four eukaryotic kingdoms",fontsize=11.2,color=MUTED)
 
 def zone(x,letter,title):
@@ -39,7 +39,7 @@ def arrow(x1,x2,y,c=MUTED):
     ax.annotate("",xy=(x2,y),xytext=(x1,y),arrowprops=dict(arrowstyle="-|>",color=c,lw=2.2,
         mutation_scale=16,shrinkA=0,shrinkB=0))
 
-# ================= ZONE A — input =================
+# ================= ZONE A - input =================
 zone(2,"1","Read DNA as physics")
 xs=np.linspace(0,1,120); hx=3.5+xs*9.5
 ax.plot(hx,72+2.4*np.sin(xs*9),color=BIO,lw=2.2)
@@ -55,13 +55,13 @@ for i,(lb,c) in enumerate(zip(labs,cols)):
     sig=(np.sin(t*(5+i)+i)*0.6+np.sin(t*(11+i))*0.35); sig=sig/(np.abs(sig).max()+1e-9)
     ax.plot(19+t*11,yy+sig*1.05,color=c,lw=1.5)
     ax.text(18.2,yy,lb,fontsize=7.0,color=MUTED,ha="right",va="center")
-ax.text(2,40,"Seven mechanical parameters per position —\nno nucleotide sequence.",
+ax.text(2,40,"Seven mechanical parameters per position -\nno nucleotide sequence.",
         fontsize=10.4,color=INK,va="top",linespacing=1.5)
 ax.text(2,33,"H-bonding and stacking are up-weighted by a\nfixed, disclosed prior (Sharma et al. 2025).",
         fontsize=8.6,color=MUTED,va="top",linespacing=1.5,style="italic")
 arrow(31,34,55)
 
-# ================= ZONE B — 3D model =================
+# ================= ZONE B - 3D model =================
 zone(35,"2","The model, in three dimensions")
 ay,axr=-0.6,-0.26
 cA,sA,cB,sB=math.cos(ay),math.sin(ay),math.cos(axr),math.sin(axr)
@@ -110,8 +110,8 @@ ax.text(35,39,"A ConvNeXt trunk (475→119) reads the profile\n"
         fontsize=9.5,color=INK,va="top",linespacing=1.55)
 arrow(64,67,55)
 
-# ================= ZONE C — results =================
-zone(68,"3","Structure travels — and is interpretable")
+# ================= ZONE C - results =================
+zone(68,"3","Structure travels - and is interpretable")
 cax=fig.add_axes([0.705,0.545,0.235,0.225]); cax.set_facecolor("white")
 bio=[0.685,0.542,0.569,0.386]; seq=[0.696,0.547,0.569,0.321]; xs=np.arange(4)
 cax.axhspan(0.18,0.25,color="#eeeef2",zorder=0)
@@ -133,7 +133,7 @@ XP=[72.43,78.87,85.31,91.75]; YICO=48.5; YLAB=44.0
 def png(path,cx,cy,h,z=6):
     im=mpimg.imread(path); ar=im.shape[1]/im.shape[0]; w=h*ar*(6.4/13.8)
     ax.imshow(im,extent=[cx-w/2,cx+w/2,cy-h/2,cy+h/2],origin="upper",zorder=z,aspect="auto")
-def diatom(cx,cy,z=6):   # pennate frustule — pointed lens with striae
+def diatom(cx,cy,z=6):   # pennate frustule - pointed lens with striae
     ax.add_patch(Ellipse((cx,cy),3.4,1.5,facecolor=INK,edgecolor="none",zorder=z))
     for dx in (-0.9,-0.3,0.3,0.9):
         ax.plot([cx+dx,cx+dx],[cy-0.5,cy+0.5],color="white",lw=0.8,zorder=z+1)
@@ -153,7 +153,7 @@ for xp,lb in zip(XP,["in-distribution","held-out\nkingdom","unseen\ndiatom","pro
     ax.text(xp,YLAB,lb,fontsize=7.2,color=INK,ha="center",va="top",linespacing=1.2)
 
 ax.text(68,37.5,"An entire kingdom held out, biophysics transfers as well as sequence "
-        "(0.542 vs 0.547);\non organisms as distant as diatoms and prokaryotes it does better — "
+        "(0.542 vs 0.547);\non organisms as distant as diatoms and prokaryotes it does better - "
         "adding\nsequence even hurts.",fontsize=9.2,color=INK,va="top",linespacing=1.5)
 ax.add_patch(FancyBboxPatch((67.5,7.5),30,8.4,boxstyle="round,pad=0.3,rounding_size=1.2",
         fc=PANEL,ec=HB,lw=1.4))

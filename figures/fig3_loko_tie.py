@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Figure 3 — cross-kingdom transfer: biophysics ties sequence.
+Figure 3 - cross-kingdom transfer: biophysics ties sequence.
 
 Leave-one-kingdom-out, 3 seeds, both arms, all leak-safe + transductive-norm.
 The claim is a TIE (0.5422 +/- 0.0044 vs 0.5465 +/- 0.0038), so the figure must
-make "these are the same" legible — paired points per kingdom with seed spread
+make "these are the same" legible - paired points per kingdom with seed spread
 shown, not bars that invite reading a winner.
 
 Numbers verified from each run's metrics.json (see RESULTS_LEDGER.md).

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Figure 4 — the normalization confound.
+Figure 4 - the normalization confound.
 
 BOTH panels are eval-only on a FIXED trained model: held-out organisms contribute no
 training rows, so their normalization statistics can only affect test-time input.
 Each model is scored twice, varying nothing but the normalization. This removes the
 seam in the earlier version, where each before/after pair came from two separately
-trained checkpoints — a real confound, since in the collapsed regime the output is
+trained checkpoints - a real confound, since in the collapsed regime the output is
 arbitrary and two equivalent checkpoints land ~6 points apart.
 
 Validation: the own-profile values reproduce each trained run's own test metric to
@@ -14,7 +14,7 @@ Validation: the own-profile values reproduce each trained run's own test metric 
 0.4455 vs 0.4455). Same computation, not merely close.
 
 COLOUR CONTRACT: colour encodes the ARM (blue = profiles, green = + sequence), never
-the kingdom — kingdoms are direct-labelled. No 4-hue kingdom set clears the all-pairs
+the kingdom - kingdoms are direct-labelled. No 4-hue kingdom set clears the all-pairs
 CVD floors, and blue/green must mean the same thing in every figure.
 
   python figures/fig4_normalization.py
@@ -76,7 +76,7 @@ def panel(ax, data, color, title, subtitle):
 dA = panel(axA, BIO, BIO_C, "a   Profiles only",
            "collapses below chance without the fix")
 dB = panel(axB, SEQ, SEQ_C, "b   Profiles + sequence",
-           "structurally immune — which hid the bug")
+           "structurally immune - which hid the bug")
 
 axA.set_ylim(0.10, 0.70)
 axA.set_yticks([0.2, 0.3, 0.4, 0.5, 0.6, 0.7])
@@ -97,7 +97,7 @@ fig.text(0.085, 0.105,
          "input alone: each model is scored twice, varying nothing else. Seed 42; full test sets (78,897–191,254 windows).",
          fontsize=6.6, color=INK, va="top", linespacing=1.65)
 fig.text(0.085, 0.045,
-         "The trunk was fitted on standardized input, so held-out organisms arrived at raw scale — the model did not meet an unfamiliar kingdom,\n"
+         "The trunk was fitted on standardized input, so held-out organisms arrived at raw scale - the model did not meet an unfamiliar kingdom,\n"
          "it met unfamiliar units. The asymmetry between the panels is the diagnosis; the recovery in (a) alone would not be.",
          fontsize=6.6, color=MUTED, va="top", linespacing=1.65)
 

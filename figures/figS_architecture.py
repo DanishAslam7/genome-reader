@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Supplementary Figure S1 — model architecture (rev 4).
+Supplementary Figure S1 - model architecture (rev 4).
 
 Rev 3 was legible in principle but not in practice: three panels side by side in
 7.4in forced type down to 4.6-5.5pt, well below print-readable. Rev 4 keeps the
@@ -55,7 +55,7 @@ def panel(x, w, y, h, letter, title, ec=RULE):
     ax.text(x + 4.8, y + h - 2.0, title, fontsize=8.8, fontweight="bold", color=INK, va="center")
 
 
-ax.text(0, 98.4, "Supplementary Figure S1 — model architecture", fontsize=13.5,
+ax.text(0, 98.4, "Supplementary Figure S1 - model architecture", fontsize=13.5,
         fontweight="bold", color=INK)
 ax.text(0, 96.0, "Read from the trained checkpoint. The profile trunk is the object of study.",
         fontsize=8.6, color=MUTED)
@@ -87,9 +87,9 @@ ax.text(93.0, SY - 1.4, "→ panel d", ha="center", va="top", fontsize=6.8, colo
 ax.text(50, 94.4, "one continuous path: profile → fixed channel scaling → trunk → shared representation → nine heads",
         ha="center", fontsize=7.6, color=MUTED, style="italic")
 
-# ══════════════════ (a) fixed channel scaling — FULL WIDTH ══════════════════
+# ══════════════════ (a) fixed channel scaling - FULL WIDTH ══════════════════
 PX, PW, PY, PH = 1.0, 98.0, 62.5, 19.0
-panel(PX, PW, PY, PH, "a", "Fixed channel scaling — the prior this work inherits", ec=RED)
+panel(PX, PW, PY, PH, "a", "Fixed channel scaling - the prior this work inherits", ec=RED)
 # connector: bottom of the "× scale" node -> top of panel (a). Must touch both,
 # or it reads as stray dots floating in the gap.
 ax.annotate("", xy=(20.75, PY + PH), xytext=(20.75, SY),
@@ -123,7 +123,7 @@ ax.text(56.0, PY + 3.0,
         "channels, so it is disclosed here.",
         fontsize=7.0, color=RED, va="top", style="italic", linespacing=1.55)
 
-# ══════════════════ (b) ConvNeXt block — LEFT HALF ══════════════════
+# ══════════════════ (b) ConvNeXt block - LEFT HALF ══════════════════
 BX, BW, BY, BH = 1.0, 47.0, 39.0, 21.0
 panel(BX, BW, BY, BH, "b", "ConvNeXt block  (one of three)")
 by = [BY + 12.4, BY + 8.6, BY + 4.8, BY + 1.0]
@@ -144,7 +144,7 @@ ax.add_patch(FancyArrowPatch((BX + 4.0, by[0] + 3.2), (BX + 4.0, by[-1] + 1.6),
 ax.text(BX + 2.2, (by[0] + by[-1]) / 2, "residual", fontsize=6.6, color=MUTED, rotation=90,
         ha="center", va="center")
 
-# ══════════════════ (c) branches — RIGHT HALF ══════════════════
+# ══════════════════ (c) branches - RIGHT HALF ══════════════════
 CX2, CW2, CY2, CH2 = 52.0, 47.0, 39.0, 21.0
 panel(CX2, CW2, CY2, CH2, "c", "Branches into the shared vector")
 rows = [("profile complexity", "14 stats/channel → 98 → 48", BIO, "derived · always on"),
@@ -163,10 +163,10 @@ for i, (t, s, c, note) in enumerate(rows):
 ax.text(CX2 + 2.2, CY2 + CH2 - 4.6, "the two derived branches make the shared vector 176-dim",
         fontsize=6.6, color=MUTED, style="italic")
 
-# ══════════════════ (d) heads — FULL WIDTH ══════════════════
+# ══════════════════ (d) heads - FULL WIDTH ══════════════════
 HX, HW, HY, HH = 1.0, 98.0, 12.0, 24.5
 panel(HX, HW, HY, HH, "d", "Nine heads, all reading the 176-dim shared representation")
-HEADS = [("element", "5", "2.5", INK, "REPORTED — the target"),
+HEADS = [("element", "5", "2.5", INK, "REPORTED - the target"),
          ("organism", "32", "1.0", RED, "adversarial · GRL λ=0.005"),
          ("kingdom", "4", "0.5", RED, "adversarial · GRL λ=0.08"),
          ("human UTR/enhancer", "3", "1.0", MUTED, "auxiliary · masked to human"),
@@ -191,7 +191,7 @@ for i, (nm, ncls, w, c, role) in enumerate(HEADS):
             ha="right")
 ax.text(HX + 2.0, HY + 2.6,
         "Adversarial heads (red) train through gradient reversal: their weight drives the trunk to SUPPRESS taxonomy, not predict it, and they are\n"
-        "excluded from the auxiliary subtotal. The six auxiliary heads total 3.2 — more than the element head's 2.5. No taxonomic identity reaches\n"
+        "excluded from the auxiliary subtotal. The six auxiliary heads total 3.2 - more than the element head's 2.5. No taxonomic identity reaches\n"
         "the element head: it is suppressed in the representation and withheld as an input.",
         fontsize=6.9, color=INK, va="center", linespacing=1.6)
 
@@ -207,4 +207,4 @@ ax.text(1.0, 2.8,
 
 for ext in ("pdf", "png"):
     fig.savefig(f"figures/figS_architecture.{ext}", dpi=600, bbox_inches="tight", facecolor="white")
-print("wrote figures/figS_architecture.pdf / .png   (rev 4 — min font ~6.2pt, body 7-7.5pt)")
+print("wrote figures/figS_architecture.pdf / .png   (rev 4 - min font ~6.2pt, body 7-7.5pt)")

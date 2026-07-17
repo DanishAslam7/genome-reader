@@ -33,7 +33,7 @@ SIZE = {"kingdom": 190, "organism": 70, "element": 90, "parameter": 130, "hotspo
 POS_C, NEG_C, BONE_C, HOT_C = "#1f6fd0", "#d1345b", "#b0367f", "#f0c3d9"
 
 # Full element names. NOTE: the KG label column mislabels ens/ene as "intron/
-# splice site" — they are ENHANCER boundaries (extracted from total_*_enhancers_;
+# splice site" - they are ENHANCER boundaries (extracted from total_*_enhancers_;
 # build_sequence_manifest.py:30-31). Use the correct names here.
 ELEMENT_NAME = {
     "gs": "gene_start", "ge": "gene_end", "prom": "promoter",
@@ -111,12 +111,12 @@ for n in G.nodes:
                 fontweight="bold", ha="center", va="bottom", zorder=10,
                 bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.75))
 
-# zoom into the semantic core (hotspot halo may clip — intended)
+# zoom into the semantic core (hotspot halo may clip - intended)
 bb = np.array([pos[n] for n in G.nodes if ntype[n] != "hotspot"])
 c, rad = bb.mean(0), (bb.max(0) - bb.min(0)).max() * 0.62
 ax.set_xlim(c[0] - rad, c[0] + rad); ax.set_ylim(c[1] - rad, c[1] + rad); ax.set_zlim(c[2] - rad, c[2] + rad)
 
-fig.text(0.02, 0.965, "The biophysical knowledge graph — 3D", fontsize=13.5, fontweight="bold", color=INK)
+fig.text(0.02, 0.965, "The biophysical knowledge graph - 3D", fontsize=13.5, fontweight="bold", color=INK)
 fig.text(0.02, 0.938, "1,757 nodes · 7,265 edges · one force-directed 3D layout (static view; rotate the "
          "interactive version)", fontsize=8.2, color=MUTED)
 
@@ -131,7 +131,7 @@ leg = ax.legend(handles=handles, loc="upper right", frameon=True, fontsize=7.0,
                 labelspacing=0.4, borderpad=0.6)
 leg.get_frame().set_edgecolor("#d6dae0")
 
-fig.text(0.5, 0.02, "Layout reflects connectivity, not similarity — distances are emergent and not "
+fig.text(0.5, 0.02, "Layout reflects connectivity, not similarity - distances are emergent and not "
          "quantitative.", ha="center", fontsize=6.4, color=MUTED, style="italic")
 
 fig.savefig("figures/figS_kg_3d.pdf")

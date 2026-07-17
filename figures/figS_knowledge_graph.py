@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Supplementary Figure — the biophysical knowledge graph and its context branch.
+Supplementary Figure - the biophysical knowledge graph and its context branch.
 
 Shows (A) the KG schema with real counts for the 32-organism cohort
 (knowledge_graph_reprofiled_32/kg_stats.json), (B) the context-only feature
@@ -72,14 +72,14 @@ def panel(x, w, y, h, letter, title, ec=RULE):
 
 
 # ═════════════ header ═════════════
-ax.text(0, 98.6, "Supplementary Figure — the knowledge-graph context branch",
+ax.text(0, 98.6, "Supplementary Figure - the knowledge-graph context branch",
         fontsize=11.6, fontweight="bold", color=INK)
 ax.text(0, 96.2, "Active in the canonical and profiles+sequence+KG configurations; withheld from the "
         "cross-kingdom transfer experiments,", fontsize=8.0, color=MUTED)
 ax.text(0, 94.4, "because cohort-derived features are fitted using every organism and would leak "
         "across a held-out kingdom.", fontsize=8.0, color=MUTED)
 
-# ═════════════ PANEL A — the graph ═════════════
+# ═════════════ PANEL A - the graph ═════════════
 panel(0.5, 99.0, 60.0, 32.0, "A", "The knowledge graph  ·  1,757 nodes, 7,265 edges (32-organism cohort)", ec=KG)
 
 # taxonomy tier (Kingdom over Organism) + biophysics chain (Element -> Parameter),
@@ -109,8 +109,8 @@ edge((H[0] + 9, H[1] + 2.4), (P[0] - 4, P[1] - 3.0), "", KG, 0.9, ls=":", curve=
 ax.text(H[0] + 14.5, H[1], "HOTSPOT_IN_{ORGANISM,\nELEMENT, PARAMETER}", ha="left", va="center",
         fontsize=5.9, color=KG)
 
-# ═════════════ PANEL B — context-only extraction ═════════════
-panel(0.5, 99.0, 30.0, 28.0, "B", "Per-window features — context nodes only (anti-leak)", ec=RED)
+# ═════════════ PANEL B - context-only extraction ═════════════
+panel(0.5, 99.0, 30.0, 28.0, "B", "Per-window features - context nodes only (anti-leak)", ec=RED)
 
 wy = 53.5
 ax.text(4.0, wy, "one training window:", fontsize=7.6, color=INK, fontweight="bold")
@@ -135,7 +135,7 @@ ax.text(74, wy - 17.7, "kg_features  =  38 × {kingdom, organism}  =  76-d",
         ha="center", va="center", fontsize=7.6, fontweight="bold", color=KG)
 edge((35, wy - 11.2), (50, wy - 10.0), "", KG, 1.2)
 
-# ═════════════ PANEL C — fusion ═════════════
+# ═════════════ PANEL C - fusion ═════════════
 panel(0.5, 99.0, 6.0, 22.0, "C", "Fusion into the profile trunk", ec=KG)
 
 fy = 19.0

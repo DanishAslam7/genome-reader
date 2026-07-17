@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Figure 6 — mechanism: which physical property encodes which element.
+Figure 6 - mechanism: which physical property encodes which element.
 
 (a) drop-one channel ablation, 7 parameters x 5 elements, 3 seeds. DIVERGING scale
     centred on zero because the negatives are real (removing H-bond IMPROVES exon
@@ -51,7 +51,7 @@ KEEP_M = {"bbone": 0.253, "bp": 0.213, "hbond": 0.191, "inter": 0.169,
 KEEP_S = {"bbone": 0.008, "bp": 0.041, "hbond": 0.022, "inter": 0.002,
           "intra": 0.044, "sol": 0.004, "stack": 0.013}
 CHANCE = 0.20
-CLEAN = (2, 2)   # hbond x promoter — the only cell with no error-bar overlap
+CLEAN = (2, 2)   # hbond x promoter - the only cell with no error-bar overlap
 
 INK, MUTED, GRID = "#1a1a19", "#6b7280", "#e5e7eb"
 
@@ -156,7 +156,7 @@ axB.spines["bottom"].set_color(GRID)
 axB.set_title("b   Keep-only: no parameter\n     carries the code alone",
               fontsize=9.2, color=INK, loc="left", pad=10, fontweight="bold")
 
-fig.text(0.088, 0.055, "Outlined cell (H-bond × promoter, 0.447 ± 0.058) is the only one whose error bars clear every rival — every other top-ranked cell overlaps its runner-up.",
+fig.text(0.088, 0.055, "Outlined cell (H-bond × promoter, 0.447 ± 0.058) is the only one whose error bars clear every rival - every other top-ranked cell overlaps its runner-up.",
          fontsize=6.6, color=INK)
 fig.text(0.088, 0.012, "* inter is the only tetranucleotide-derived parameter; the other six come from the trinucleotide table.",
          fontsize=6.6, color=MUTED)

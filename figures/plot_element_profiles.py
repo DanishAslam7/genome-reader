@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Per-(organism, element) mean biophysical-profile traces — structure-&-dynamics style.
+"""Per-(organism, element) mean biophysical-profile traces - structure-&-dynamics style.
 
 For every (kingdom/organism/element) in the reprofiled legacy tree, plot the mean
-(+/-SD band) of each of the 7 canonical biophysical tracks vs centered position —
+(+/-SD band) of each of the 7 canonical biophysical tracks vs centered position -
 matching the fig7 aesthetic in claude_opus/make_projection_figures.py, but one
 figure per organism x element (all 32 organisms: old, new, and the balancing 6).
 
@@ -43,7 +43,7 @@ ELEMENT_NAME = {
 }
 DARK_RED = "#8B0000"
 LINE = "#C0504D"
-ACCENT_COL = "#c2418c"     # H-bond & stacking — the channels the model up-weights x2
+ACCENT_COL = "#c2418c"     # H-bond & stacking - the channels the model up-weights x2
 ACCENT_TITLE = "#a01b3a"
 plt.rcParams.update({"font.family": "DejaVu Sans", "figure.dpi": 200,
                      "axes.titleweight": "bold", "axes.titlesize": 10})
@@ -126,7 +126,7 @@ def plot_element(element_dir: Path, kingdom: str, organism: str, element: str,
     axes[7].text(0.5, 0.5,
                  f"{ELEMENT_NAME.get(element, element)}\n{organism}\n({kingdom})\n\nn = {n_seq:,} sequences\nmean ± SD",
                  ha="center", va="center", fontsize=12, color=DARK_RED, fontweight="bold")
-    fig.suptitle(f"Mean biophysical profile — {ELEMENT_NAME.get(element, element)} · {organism}",
+    fig.suptitle(f"Mean biophysical profile - {ELEMENT_NAME.get(element, element)} · {organism}",
                  color=DARK_RED, fontweight="bold", fontsize=13)
     fig.tight_layout(rect=[0, 0, 1, 0.97])
     out_path.parent.mkdir(parents=True, exist_ok=True)

@@ -8,7 +8,7 @@ Fast path (this script): the assembled diatom caches diatom_cache/<org>_total_<e
 (shape n x 7 x 475), param order [bbone,bp,hbond,inter,intra,sol,stack].
 
 For the 32 cohort organisms use plot_element_profiles.py (same style, reads the
-per-organism CSV tree) — run it on the cluster; the CSVs are ~270 MB each.
+per-organism CSV tree) - run it on the cluster; the CSVs are ~270 MB each.
 
   python figures/profile_source_style.py
   -> figures/element_profiles_enhanced/<organism>/<element>.{png}
@@ -57,7 +57,7 @@ def make(org_slug, org_name, elem, elem_name):
     cap.text(0.02,0.5,f"n = {n:,} windows\nmean ± SD of the real\nbiophysical profile\n\n"
              "H-bonding and stacking\n(magenta, ×2) carry the\nfixed prior weighting the\nmodel inherits.",
              fontsize=8.6,color=MUTED,va="top",linespacing=1.5,transform=cap.transAxes)
-    fig.suptitle(f"Biophysical profile of the {elem_name} — {org_name}",
+    fig.suptitle(f"Biophysical profile of the {elem_name} - {org_name}",
                  fontsize=14,fontweight="bold",color=INK,y=0.995)
     fig.tight_layout(rect=[0,0,1,0.965])
     d = os.path.join(OUT, org_slug); os.makedirs(d, exist_ok=True)

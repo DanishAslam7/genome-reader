@@ -95,7 +95,7 @@ def main():
             dest.write_bytes(r.read())
 
         lic = (L.get("license") or {}).get("href", "?")
-        attr = img.get("attribution") or "—"
+        attr = img.get("attribution") or "-"
         title = (L.get("self") or {}).get("title", "")
         credits.append({"slug": slug, "kingdom": kingdom, "resolved_from": used,
                         "phylopic_title": title, "license": lic, "attribution": attr,

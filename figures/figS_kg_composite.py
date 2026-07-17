@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Supplementary Figure — the biophysical knowledge graph (composite).
+Supplementary Figure - the biophysical knowledge graph (composite).
 
 (A) the ACTUAL 32-organism graph, force-directed, organisms tinted by kingdom so
     the four clades cluster; (B) how each training window's context features are
@@ -46,7 +46,7 @@ def ncolor(nid):
 
 fig=plt.figure(figsize=(8.2,8.8)); fig.patch.set_facecolor("white")
 
-# ========== PANEL A — force-directed render ==========
+# ========== PANEL A - force-directed render ==========
 axA=fig.add_axes([0.02,0.40,0.96,0.55]); axA.axis("off")
 hot_e=[]; back_e=[]
 for u,v in G.edges():
@@ -79,7 +79,7 @@ leg=axA.legend(handles=h1+h2,loc="lower left",frameon=True,fontsize=7.2,labelspa
     borderpad=.7,title="kingdoms (node + its organisms)  ·  other types",title_fontsize=7.4,ncol=1)
 leg.get_frame().set_edgecolor(RULE)
 
-# ========== PANELS B & C — schematic ==========
+# ========== PANELS B & C - schematic ==========
 axS=fig.add_axes([0,0.015,1,0.365]); axS.set_xlim(0,100); axS.set_ylim(0,100); axS.axis("off")
 def box(x,y,w,h,fc="white",ec=RULE,lw=1.0,z=2,r=1.4):
     axS.add_patch(FancyBboxPatch((x,y),w,h,boxstyle=f"round,pad=0,rounding_size={r}",fc=fc,ec=ec,lw=lw,zorder=z))

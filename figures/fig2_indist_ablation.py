@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Figure 2 — in distribution, structure is as good as sequence.
+Figure 2 - in distribution, structure is as good as sequence.
 
 (a) three input arms, 3 seeds each, on the shared 32-organism test split.
 (b) the decomposition: what sequence adds, and what the knowledge graph adds on
-    top of it. Both increments are ~1pp on a 68-71% base — i.e. structure alone
+    top of it. Both increments are ~1pp on a 68-71% base - i.e. structure alone
     is already doing nearly all the work.
 
 All sd's are SAMPLE sd (ddof=1), matching Figures 3-6. (The ledger previously

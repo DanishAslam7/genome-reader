@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Figure 5 — the transfer-distance gradient (transfer-only, one configuration family).
+Figure 5 - the transfer-distance gradient (transfer-only, one configuration family).
 
 REBUILT 2026-07-16. The earlier version put in-distribution as the first rung, but
 in-dist comes from a different configuration family (segment windows + kingdom

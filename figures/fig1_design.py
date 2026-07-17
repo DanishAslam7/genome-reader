@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Figure 1 — study design and model.
+Figure 1 - study design and model.
 
 (a) the cohort: 32 organisms, 8 per kingdom (balanced by construction, which is what
     makes the leave-one-kingdom-out folds comparable), plus the two external
@@ -9,7 +9,7 @@ Figure 1 — study design and model.
     branches are ablation arms, and the knowledge graph is disabled for all transfer.
 
 COLOUR CONTRACT (paper-wide): blue = biophysics/profiles, green = +sequence,
-magenta = +knowledge graph. Kingdoms are NEVER encoded by hue — no 4-hue set drawn
+magenta = +knowledge graph. Kingdoms are NEVER encoded by hue - no 4-hue set drawn
 from the remaining documented slots clears the all-pairs CVD/normal-vision floors
 (best is 6.9/20.8, floor band), so kingdoms are encoded by position and label.
 
@@ -61,7 +61,7 @@ def box(ax, x, y, w, h, fc="white", ec=RULE, lw=0.9, z=2):
                                 fc=fc, ec=ec, lw=lw, zorder=z))
 
 
-# PhyloPic silhouettes: all public domain (7x CC0, 1x PD Mark) — see
+# PhyloPic silhouettes: all public domain (7x CC0, 1x PD Mark) - see
 # figures/phylopic/CREDITS.json. Recoloured to the figure ink; extents are computed
 # from the axes' true inch dimensions so the shapes are never distorted by the
 # non-square 0-100 coordinate system.
@@ -165,10 +165,10 @@ for i, (kingdom, orgs) in enumerate(COHORT.items()):
 
 axA.annotate("", xy=(x0 + 4 * colw + 3 * gap - 0.4, 18.5), xytext=(x0, 18.5),
              arrowprops=dict(arrowstyle="-", color=RULE, lw=1.0))
-axA.text(x0, 14.5, "TRAINING COHORT — each kingdom held out in turn (Section 3.2)", fontsize=7.2,
+axA.text(x0, 14.5, "TRAINING COHORT - each kingdom held out in turn (Section 3.2)", fontsize=7.2,
          color=MUTED, fontweight="bold")
 
-# external sets — taller boxes; title and body get their own lines
+# external sets - taller boxes; title and body get their own lines
 for i, (title, l1, l2) in enumerate([
         ("2 diatoms", "P. tricornutum · T. pseudonana", "unseen eukaryotic lineage"),
         ("49 prokaryotes", "promoters", "a different domain of life")]):
@@ -243,7 +243,7 @@ axB.text(92, 11.5, "coarse element\nbio group · cds\nstart/stop pair\nUTR subty
                    "human-only UTR",
          fontsize=5.6, color=MUTED, ha="center", va="center", linespacing=1.5)
 
-# footnote at FIGURE level, below both panels — justified so the block reads as a
+# footnote at FIGURE level, below both panels - justified so the block reads as a
 # tidy rectangle rather than three ragged lines of very unequal length.
 justified_paragraph(
     fig, 0.045, 0.058, 0.920,
