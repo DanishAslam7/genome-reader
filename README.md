@@ -13,8 +13,8 @@ which physical property encodes which element.
 > **Archived code:** https://doi.org/10.5281/zenodo.21400171 (Zenodo concept DOI — always resolves to
 > the latest version; this GitHub repository is the working mirror, snapshotted at each release).
 > **Trained model weights and the exact split indices needed to reproduce every comparison** are
-> deposited as a separate Zenodo record — **[weights DOI — to be minted]** — because they are too
-> large for the code repository.
+> deposited as a separate Zenodo record — https://doi.org/10.5281/zenodo.21403873 (CC-BY-4.0) —
+> because they are too large for the code repository.
 
 ## What is (and isn't) here
 
@@ -50,9 +50,9 @@ figures/      one script per figure; run to regenerate the PDFs/PNGs
   2025, 147488); used by `profiling/asyncPython*.py`.
 - **Prokaryotic promoter set** (external validation): experimentally validated compilation from
   *Nucleic Acids Research* 53(21), gkaf1310, Supplementary Data S1.
-- **Trained weights + split indices** (`provenance_{train,val,test}_idx.npy`): on Zenodo. These
-  indices are the reproducibility crux — they let you score any baseline on the *identical* rows the
-  model used.
+- **Trained weights + split indices** (`provenance_{train,val,test}_idx.npy`): Zenodo,
+  https://doi.org/10.5281/zenodo.21403873 (38 runs; see its `MANIFEST.csv`). These indices are the
+  reproducibility crux — they let you score any baseline on the *identical* rows the model used.
 - **The full profile tensor (~184 GB)** is not deposited; regenerate it with `profiling/` from the
   public assemblies, or request it from the corresponding author.
 
