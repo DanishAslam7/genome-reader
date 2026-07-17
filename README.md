@@ -38,6 +38,9 @@ code/         model, baselines, and all evaluation scripts (flat layout — they
   build_*.py                      dataset / manifest / knowledge-graph construction
 profiling/    biophysical profiling pipeline (run_profile_batch.py + asyncPython*.py)
 figures/      one script per figure; run to regenerate the PDFs/PNGs
+  kg_3d.html                      interactive 3D knowledge graph (self-contained; see below)
+  figS_knowledge_graph.py         KG schema + context branch (how the KG feeds the model)
+  figS_kg_render.py / figS_kg_3d.py  2D and 3D force-directed renders of the real KG
   phylopic/   public-domain organism silhouettes for Figure 1 (see CREDITS.json)
 ```
 
@@ -88,6 +91,23 @@ python code/eval_dnalm_external.py --model <FINETUNED_DIR> [--from-scratch]
 
 DNABERT-2 was attempted but is not included: its custom flash-attention kernel is incompatible with
 the available Triton runtime (documented in the paper, Section 2.9).
+
+## Interactive knowledge graph
+
+`figures/kg_3d.html` is a self-contained, rotatable 3D rendering of the actual biophysical
+knowledge graph (1,757 nodes, 7,265 edges over the 32-organism cohort) — no build step, no external
+dependencies. Drag to rotate, scroll to zoom, hover a node to identify it, and toggle the 1,700
+hotspot nodes off to isolate the semantic backbone. Parameter correlation edges are sign-coloured
+(blue = +r, red = −r); the layout reflects connectivity, not similarity (distances are not
+quantitative).
+
+- **View locally:** download and open `figures/kg_3d.html` in any browser.
+- **View online (GitHub Pages):** once Pages is enabled for this repository (Settings → Pages →
+  Deploy from branch → `main` / root), it is served at
+  `https://danishaslam7.github.io/genome-reader/figures/kg_3d.html`.
+- **Regenerate:** `python figures/figS_kg_3d.py` recomputes the layout from the knowledge-graph CSVs
+  (`kg_nodes.csv` / `kg_edges.csv`, built by `code/build_knowledge_graph.py`) and rewrites both the
+  static stills and the data embedded in the page.
 
 ## Environment
 
