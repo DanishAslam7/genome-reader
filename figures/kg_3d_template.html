@@ -1,0 +1,350 @@
+<style>
+  :root{
+    --bg:#f4f3f8; --panel:rgba(255,255,255,.74); --panel-solid:#fbfaff;
+    --ink:#1a1626; --muted:#6b6580; --line:#dcd7e8; --hair:rgba(20,16,32,.08);
+    --canvas-top:#f7f6fc; --canvas-bot:#eceaf4;
+    --k-kingdom:#6d3bef; --k-organism:#d6408f; --k-element:#2f7fe0; --k-parameter:#0e9d88; --k-hotspot:#e29ac2;
+    --e-backbone:rgba(150,64,122,.34); --e-pos:#2f7fe0; --e-neg:#e0405f; --e-hotspot:rgba(198,120,160,.13);
+    --label:#241f33; --label-bg:rgba(255,255,255,.82);
+    --chip:rgba(20,16,32,.05); --shadow:0 8px 30px rgba(40,20,60,.14);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d0b14; --panel:rgba(26,22,36,.72); --panel-solid:#171320;
+      --ink:#f0ecf8; --muted:#9a93ad; --line:rgba(255,255,255,.12); --hair:rgba(255,255,255,.07);
+      --canvas-top:#131020; --canvas-bot:#0b0912;
+      --k-kingdom:#9166ff; --k-organism:#f665ac; --k-element:#4ba2ff; --k-parameter:#20c9af; --k-hotspot:#f0aecd;
+      --e-backbone:rgba(232,124,182,.30); --e-pos:#4ba2ff; --e-neg:#ff5d78; --e-hotspot:rgba(244,184,211,.10);
+      --label:#efeaf7; --label-bg:rgba(16,13,24,.72);
+      --chip:rgba(255,255,255,.07); --shadow:0 10px 34px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f3f8; --panel:rgba(255,255,255,.74); --panel-solid:#fbfaff;
+    --ink:#1a1626; --muted:#6b6580; --line:#dcd7e8; --hair:rgba(20,16,32,.08);
+    --canvas-top:#f7f6fc; --canvas-bot:#eceaf4;
+    --k-kingdom:#6d3bef; --k-organism:#d6408f; --k-element:#2f7fe0; --k-parameter:#0e9d88; --k-hotspot:#e29ac2;
+    --e-backbone:rgba(150,64,122,.34); --e-pos:#2f7fe0; --e-neg:#e0405f; --e-hotspot:rgba(198,120,160,.13);
+    --label:#241f33; --label-bg:rgba(255,255,255,.82);
+    --chip:rgba(20,16,32,.05); --shadow:0 8px 30px rgba(40,20,60,.14);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d0b14; --panel:rgba(26,22,36,.72); --panel-solid:#171320;
+    --ink:#f0ecf8; --muted:#9a93ad; --line:rgba(255,255,255,.12); --hair:rgba(255,255,255,.07);
+    --canvas-top:#131020; --canvas-bot:#0b0912;
+    --k-kingdom:#9166ff; --k-organism:#f665ac; --k-element:#4ba2ff; --k-parameter:#20c9af; --k-hotspot:#f0aecd;
+    --e-backbone:rgba(232,124,182,.30); --e-pos:#4ba2ff; --e-neg:#ff5d78; --e-hotspot:rgba(244,184,211,.10);
+    --label:#efeaf7; --label-bg:rgba(16,13,24,.72);
+    --chip:rgba(255,255,255,.07); --shadow:0 10px 34px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  #kgstage{position:fixed; inset:0; overflow:hidden; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  #kgcanvas{position:absolute; inset:0; display:block; touch-action:none; cursor:grab}
+  #kgcanvas.dragging{cursor:grabbing}
+  .mono{font-family:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,monospace;
+    font-variant-numeric:tabular-nums}
+
+  .head{position:absolute; top:22px; left:26px; max-width:min(42ch,52vw); pointer-events:none}
+  .eyebrow{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600}
+  .title{font-size:clamp(19px,3vw,28px); font-weight:680; line-height:1.05; margin:.28em 0 .3em;
+    text-wrap:balance; letter-spacing:-.01em}
+  .sub{font-size:13px; color:var(--muted); line-height:1.45}
+  .sub b{color:var(--ink); font-weight:600}
+
+  .rail{position:absolute; top:22px; right:22px; width:258px; max-height:calc(100vh - 44px);
+    overflow-y:auto; padding:16px 16px 14px; background:var(--panel); border:1px solid var(--line);
+    border-radius:16px; backdrop-filter:blur(14px) saturate(1.2); -webkit-backdrop-filter:blur(14px) saturate(1.2);
+    box-shadow:var(--shadow); font-size:12.5px}
+  .rail h2{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 9px; font-weight:700}
+  .grp+ .grp{margin-top:14px; padding-top:13px; border-top:1px solid var(--hair)}
+  .legrow{display:flex; align-items:center; gap:9px; padding:3px 0}
+  .dot{width:12px; height:12px; border-radius:50%; flex:none; box-shadow:0 0 0 1px rgba(255,255,255,.35) inset}
+  .legrow .nm{flex:1} .legrow .ct{color:var(--muted)}
+  .key{display:flex; align-items:center; gap:9px; padding:2px 0; color:var(--muted)}
+  .swatch{width:20px; height:0; border-top:3px solid currentColor; border-radius:2px; flex:none}
+  .toggle{display:flex; align-items:center; gap:9px; padding:6px 0; cursor:pointer; user-select:none}
+  .toggle input{appearance:none; width:34px; height:19px; border-radius:11px; background:var(--line);
+    position:relative; cursor:pointer; transition:background .18s; flex:none}
+  .toggle input:checked{background:var(--k-organism)}
+  .toggle input::after{content:""; position:absolute; top:2px; left:2px; width:15px; height:15px;
+    border-radius:50%; background:#fff; transition:transform .18s; box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .toggle input:checked::after{transform:translateX(15px)}
+  .toggle:focus-within input{outline:2px solid var(--k-element); outline-offset:2px}
+
+  /* readout */
+  .readout .rname{font-size:15px; font-weight:700; letter-spacing:-.01em; line-height:1.1}
+  .readout .rmeta{font-size:11px; color:var(--muted); margin-top:2px}
+  .readout .rdesc{font-size:11.5px; margin-top:7px; line-height:1.45; color:var(--ink)}
+  .readout .rsub{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+    margin:11px 0 5px; font-weight:700}
+  .chips{display:flex; flex-wrap:wrap; gap:5px}
+  .chip{display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px;
+    background:var(--chip); font-size:11px}
+  .chip i{width:8px; height:8px; border-radius:50%; display:inline-block}
+  .corr{display:flex; align-items:center; gap:8px; padding:2px 0; font-size:11.5px}
+  .corr .cn{flex:1}
+  .corr .cv{font-weight:600}
+  .placeholder{font-size:11.5px; color:var(--muted); line-height:1.5}
+  .clearbtn{margin-top:10px; font-size:11px; color:var(--k-element); background:none; border:none;
+    padding:0; cursor:pointer; text-decoration:underline}
+
+  .dldesc{font-size:10.5px; color:var(--muted); line-height:1.45; margin-bottom:8px}
+  .dlbtn{display:block; width:100%; margin-top:6px; padding:7px 8px; border-radius:8px;
+    border:1px solid var(--line); background:var(--chip); color:var(--ink); cursor:pointer;
+    font-size:11.5px; font-family:inherit; font-variant-numeric:tabular-nums; text-align:left}
+  .dlbtn:hover{border-color:var(--k-organism); color:var(--k-organism)}
+  .note{margin-top:13px; padding-top:12px; border-top:1px solid var(--hair); font-size:11px; line-height:1.5; color:var(--muted)}
+  .note b{color:var(--ink); font-weight:600}
+  .hint{position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11.5px;
+    color:var(--muted); background:var(--panel); padding:6px 14px; border:1px solid var(--line);
+    border-radius:999px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:none}
+  .hint .mono{color:var(--ink)}
+  #tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .12s; background:var(--label-bg);
+    border:1px solid var(--line); border-radius:9px; padding:7px 10px; font-size:12px; box-shadow:var(--shadow);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:5; max-width:230px}
+  #tip .tname{font-weight:680; letter-spacing:-.01em}
+  #tip .tmeta{color:var(--muted); font-size:11px; margin-top:1px}
+
+  @media (max-width:760px){
+    .rail{width:220px; right:12px; top:12px; max-height:calc(100vh - 24px)}
+    .head{max-width:64vw; top:14px; left:16px} .hint{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+
+<div id="kgstage">
+  <canvas id="kgcanvas" aria-label="Interactive 3D rendering of the biophysical knowledge graph: 1,757 nodes and 7,265 edges over kingdoms, organisms, genomic elements, biophysical parameters and hotspots. Drag to rotate, scroll to zoom, click a node to explore its connections."></canvas>
+
+  <div class="head">
+    <div class="eyebrow">Biophysical genomic code</div>
+    <div class="title">The knowledge graph, in three dimensions</div>
+    <div class="sub"><b>1,757</b> nodes · <b>7,265</b> edges · the actual 32-organism graph.
+      Drag to rotate · <b>click a node</b> to explore.</div>
+  </div>
+
+  <aside class="rail" aria-label="Legend, controls and node readout">
+    <div class="grp">
+      <h2>Node types</h2>
+      <div class="legrow"><span class="dot" style="background:var(--k-kingdom)"></span><span class="nm">Kingdom</span><span class="ct mono">4</span></div>
+      <div class="legrow"><span class="dot" style="background:var(--k-organism)"></span><span class="nm">Organism</span><span class="ct mono">32</span></div>
+      <div class="legrow"><span class="dot" style="background:var(--k-element)"></span><span class="nm">Element</span><span class="ct mono">14</span></div>
+      <div class="legrow"><span class="dot" style="background:var(--k-parameter)"></span><span class="nm">Parameter</span><span class="ct mono">7</span></div>
+      <div class="legrow"><span class="dot" style="background:var(--k-hotspot)"></span><span class="nm">Hotspot</span><span class="ct mono">1,700</span></div>
+    </div>
+
+    <div class="grp readout" id="readout">
+      <h2>Selected node</h2>
+      <div class="placeholder">Click any node to see what it connects to. Click a <b>parameter</b>
+        to read its correlations with signed <span class="mono">r</span>.</div>
+    </div>
+
+    <div class="grp">
+      <h2>Show</h2>
+      <label class="toggle"><input type="checkbox" id="tHot" checked><span>Hotspot nodes</span></label>
+      <label class="toggle"><input type="checkbox" id="tHotE"><span>Hotspot links</span></label>
+      <label class="toggle"><input type="checkbox" id="tSpin" checked><span>Auto-rotate</span></label>
+    </div>
+
+    <div class="grp">
+      <h2>Download the graph</h2>
+      <div class="dldesc">The complete graph as CSV — nodes (type, name, profile stats) and edges
+        (relation, per-organism profile means, correlation r).</div>
+      <button class="dlbtn" id="dlNodes">&#8595; Nodes &nbsp;(1,757 &times; 27)</button>
+      <button class="dlbtn" id="dlEdges">&#8595; Edges &nbsp;(7,265 &times; 12)</button>
+    </div>
+
+    <div class="note">
+      Layout reflects <b>connectivity, not similarity</b> — distances are emergent, not quantitative.
+      Correlation edges are sign-coloured (blue +r, red −r); an anti-correlated pair is an opposition,
+      not a kinship.
+    </div>
+  </aside>
+
+  <div class="hint">drag <span class="mono">rotate</span> · scroll <span class="mono">zoom</span> · click <span class="mono">explore</span></div>
+  <div id="tip"></div>
+</div>
+
+<script>
+const KG = __KGDATA__;
+const NODES_B64 = "__NODES_B64__";
+const EDGES_B64 = "__EDGES_B64__";
+(function(){
+  const cv=document.getElementById("kgcanvas"), ctx=cv.getContext("2d");
+  const tip=document.getElementById("tip"), stage=document.getElementById("kgstage");
+  const readoutEl=document.getElementById("readout"), root=document.documentElement;
+  const css=v=>getComputedStyle(root).getPropertyValue(v).trim();
+  let COL={},EDGE={},BG={};
+  function readTheme(){
+    COL={kingdom:css("--k-kingdom"),organism:css("--k-organism"),element:css("--k-element"),parameter:css("--k-parameter"),hotspot:css("--k-hotspot")};
+    EDGE={backbone:css("--e-backbone"),corr_pos:css("--e-pos"),corr_neg:css("--e-neg"),hotspot:css("--e-hotspot")};
+    BG={top:css("--canvas-top"),bot:css("--canvas-bot"),label:css("--label"),labelbg:css("--label-bg")};
+  }
+  readTheme();
+
+  const RAD={kingdom:9,organism:5.4,element:6,parameter:7.6,hotspot:1.7};
+  const LABEL=new Set(["kingdom","parameter"]);
+  const TYPE_ORDER=["kingdom","organism","element","parameter","hotspot"];
+  const TYPE_DESC={kingdom:"taxonomic kingdom",organism:"one profiled genome",
+    element:"genomic element class",parameter:"DNA biophysical parameter",
+    hotspot:"localized high-signal region (organism × element × parameter)"};
+  const PARAM_DESC={hbond:"hydrogen-bond energy",stack:"base-stacking energy",sol:"solvation energy",
+    bp:"base-pair geometry",intra:"intra-base-pair geometry",
+    inter:"inter-base-pair step geometry (tetranucleotide)",bbone:"backbone geometry"};
+  const N=KG.nodes, E=KG.edges;
+
+  // adjacency
+  const adj=Array.from({length:N.length},()=>[]);
+  const incident=Array.from({length:N.length},()=>new Set());
+  E.forEach((e,ei)=>{ adj[e.s].push({o:e.t,k:e.k,r:e.r}); adj[e.t].push({o:e.s,k:e.k,r:e.r});
+    incident[e.s].add(ei); incident[e.t].add(ei); });
+
+  let W=0,H=0,DPR=1;
+  function resize(){ DPR=Math.min(window.devicePixelRatio||1,2); W=stage.clientWidth; H=stage.clientHeight;
+    cv.width=W*DPR; cv.height=H*DPR; cv.style.width=W+"px"; cv.style.height=H+"px"; ctx.setTransform(DPR,0,0,DPR,0,0); }
+  window.addEventListener("resize",resize);
+
+  const reduce=window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  let ay=0.5,ax=-0.35,zoom=1,spin=!reduce,showHot=true,showHotE=false;
+  const tSpin=document.getElementById("tSpin"); if(reduce) tSpin.checked=false;
+  document.getElementById("tHot").addEventListener("change",e=>showHot=e.target.checked);
+  document.getElementById("tHotE").addEventListener("change",e=>showHotE=e.target.checked);
+  tSpin.addEventListener("change",e=>spin=e.target.checked);
+
+  const px=new Float32Array(N.length),py=new Float32Array(N.length),pz=new Float32Array(N.length);
+  const order=new Int32Array(N.length); for(let i=0;i<N.length;i++) order[i]=i;
+  let hover=-1,mx=-1e5,my=-1e5, focus=-1, fN=null, fE=null;
+
+  function setFocus(i){
+    focus=i;
+    if(i<0){ fN=null; fE=null; }
+    else{ fN=new Set([i]); adj[i].forEach(a=>fN.add(a.o)); fE=incident[i]; }
+    renderReadout(i);
+  }
+  function esc(s){ return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+  function renderReadout(i){
+    if(i<0){ readoutEl.innerHTML='<h2>Selected node</h2><div class="placeholder">Click any node to '+
+      'see what it connects to. Click a <b>parameter</b> to read its correlations with signed '+
+      '<span class="mono">r</span>.</div>'; return; }
+    const n=N[i], col=COL[n.t];
+    // neighbour breakdown by type
+    const cnt={}; adj[i].forEach(a=>{const t=N[a.o].t; cnt[t]=(cnt[t]||0)+1;});
+    let chips=""; TYPE_ORDER.forEach(t=>{ if(cnt[t]) chips+='<span class="chip"><i style="background:'+
+      COL[t]+'"></i>'+cnt[t]+' '+t+(cnt[t]>1?"s":"")+'</span>'; });
+    let desc=TYPE_DESC[n.t]; if(n.t==="parameter"&&PARAM_DESC[n.n]) desc=PARAM_DESC[n.n]+" — "+desc;
+    let html='<h2>Selected node</h2>'+
+      '<div class="rname" style="color:'+col+'">'+esc(n.n||"hotspot")+'</div>'+
+      '<div class="rmeta mono">'+n.t+' · degree '+n.d+'</div>'+
+      '<div class="rdesc">'+desc+'</div>'+
+      '<div class="rsub">connects to</div><div class="chips">'+chips+'</div>';
+    if(n.t==="parameter"){
+      const cs=adj[i].filter(a=>a.k==="corr_pos"||a.k==="corr_neg")
+        .sort((a,b)=>Math.abs(b.r)-Math.abs(a.r));
+      if(cs.length){ html+='<div class="rsub">correlations (r)</div>';
+        cs.forEach(a=>{ const pc=a.r>=0?EDGE.corr_pos:EDGE.corr_neg;
+          html+='<div class="corr"><span class="cn">'+esc(N[a.o].n)+'</span>'+
+            '<span class="cv mono" style="color:'+pc+'">'+(a.r>=0?"+":"")+a.r.toFixed(2)+'</span></div>'; }); }
+    }
+    html+='<button class="clearbtn" id="clrFocus">clear selection</button>';
+    readoutEl.innerHTML=html;
+    document.getElementById("clrFocus").addEventListener("click",()=>setFocus(-1));
+  }
+
+  function project(){
+    const cx=W/2,cy=H/2,s=Math.min(W,H)*0.34*zoom;
+    const cA=Math.cos(ay),sA=Math.sin(ay),cB=Math.cos(ax),sB=Math.sin(ax);
+    for(let i=0;i<N.length;i++){ const n=N[i];
+      let x1=n.x*cA+n.z*sA, z1=-n.x*sA+n.z*cA;
+      let y2=n.y*cB - z1*sB, z2=n.y*sB + z1*cB;
+      const persp=3.2/(3.2-z2*0.9);
+      px[i]=cx+x1*s*persp; py[i]=cy-y2*s*persp; pz[i]=z2; }
+  }
+  function draw(){
+    project();
+    const g=ctx.createRadialGradient(W/2,H*0.42,0,W/2,H*0.42,Math.max(W,H)*0.75);
+    g.addColorStop(0,BG.top); g.addColorStop(1,BG.bot); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    const foc=focus>=0;
+    // edges
+    for(let e=0;e<E.length;e++){ const ed=E[e],k=ed.k;
+      if(k==="hotspot"&&(!showHotE||!showHot)) continue;
+      const dim=foc&&!fE.has(e);
+      ctx.beginPath(); ctx.moveTo(px[ed.s],py[ed.s]); ctx.lineTo(px[ed.t],py[ed.t]);
+      if(k==="backbone"){ctx.strokeStyle=EDGE.backbone; ctx.lineWidth=0.8;}
+      else if(k==="corr_pos"){ctx.strokeStyle=EDGE.corr_pos; ctx.lineWidth=2.1;}
+      else if(k==="corr_neg"){ctx.strokeStyle=EDGE.corr_neg; ctx.lineWidth=2.1;}
+      else {ctx.strokeStyle=EDGE.hotspot; ctx.lineWidth=0.5;}
+      ctx.globalAlpha=dim?0.05:1; ctx.stroke(); }
+    ctx.globalAlpha=1;
+    // nodes far->near
+    order.sort((a,b)=>pz[a]-pz[b]);
+    let best=-1,bestD=16*16;
+    for(let o=0;o<order.length;o++){ const i=order[o],n=N[i];
+      if(n.t==="hotspot"&&!showHot) continue;
+      const depth=(pz[i]+1)/2, persp=3.2/(3.2-pz[i]*0.9);
+      const r=RAD[n.t]*zoom*persp*(0.72+0.5*depth);
+      let a=n.t==="hotspot"?(0.18+0.35*depth):(0.55+0.45*depth);
+      if(foc&&!fN.has(i)) a*=0.10;
+      ctx.globalAlpha=a; ctx.fillStyle=COL[n.t];
+      ctx.beginPath(); ctx.arc(px[i],py[i],r,0,6.2832); ctx.fill();
+      if(n.t!=="hotspot"){ ctx.globalAlpha=Math.min(1,(foc&&!fN.has(i))?0.12:0.5+0.6*depth);
+        ctx.lineWidth=(focus===i)?2:1; ctx.strokeStyle=(focus===i)?COL[n.t]:"rgba(255,255,255,.7)"; ctx.stroke(); }
+      const dx=px[i]-mx,dy=py[i]-my,dd=dx*dx+dy*dy;
+      if(n.t!=="hotspot"&&dd<bestD&&dd<(r+7)*(r+7)){best=i;bestD=dd;} }
+    ctx.globalAlpha=1; hover=best;
+    // labels (anchors + focused neighbourhood)
+    ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.font="600 11px system-ui,sans-serif";
+    for(let o=0;o<order.length;o++){ const i=order[o],n=N[i];
+      const show = LABEL.has(n.t) || (foc&&fN.has(i)&&n.t!=="hotspot");
+      if(!show) continue;
+      const depth=(pz[i]+1)/2, persp=3.2/(3.2-pz[i]*0.9), r=RAD[n.t]*zoom*persp*(0.72+0.5*depth);
+      const tx=px[i],ty=py[i]-r-8,w=ctx.measureText(n.n).width;
+      ctx.globalAlpha=foc&&!fN.has(i)?0.12:0.55+0.45*depth;
+      ctx.fillStyle=BG.labelbg; rr(tx-w/2-4,ty-8,w+8,16,4); ctx.fill();
+      ctx.fillStyle=BG.label; ctx.fillText(n.n,tx,ty); }
+    ctx.globalAlpha=1;
+    // hover tooltip
+    if(hover>=0){ const n=N[hover];
+      tip.innerHTML='<div class="tname" style="color:'+COL[n.t]+'">'+esc(n.n||"hotspot")+
+        '</div><div class="tmeta mono">'+n.t+' · degree '+n.d+(focus<0?' · click to explore':'')+'</div>';
+      tip.style.left=(px[hover]+14)+"px"; tip.style.top=(py[hover]-10)+"px"; tip.style.opacity=1;
+      cv.style.cursor=dragging?"grabbing":"pointer";
+    } else { tip.style.opacity=0; cv.style.cursor=dragging?"grabbing":"grab"; }
+    if(spin&&!dragging&&focus<0) ay+=0.0022;
+    requestAnimationFrame(draw);
+  }
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+  let dragging=false,lx=0,ly=0,moved=false;
+  cv.addEventListener("pointerdown",e=>{dragging=true;moved=false;lx=e.clientX;ly=e.clientY;
+    const rect=cv.getBoundingClientRect(); mx=e.clientX-rect.left; my=e.clientY-rect.top;
+    cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener("pointermove",e=>{ const rect=cv.getBoundingClientRect();
+    mx=e.clientX-rect.left; my=e.clientY-rect.top;
+    if(dragging){ if(Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly)>4) moved=true;
+      ay+=(e.clientX-lx)*0.008; ax+=(e.clientY-ly)*0.008; ax=Math.max(-1.45,Math.min(1.45,ax));
+      lx=e.clientX; ly=e.clientY; } });
+  function up(){ if(dragging&&!moved) setFocus(hover>=0?hover:-1); dragging=false; }
+  cv.addEventListener("pointerup",up); cv.addEventListener("pointercancel",()=>dragging=false);
+  cv.addEventListener("pointerleave",()=>{mx=-1e5;my=-1e5;});
+  cv.addEventListener("wheel",e=>{e.preventDefault(); zoom*=Math.exp(-e.deltaY*0.0012);
+    zoom=Math.max(0.45,Math.min(4.5,zoom));},{passive:false});
+
+  new MutationObserver(readTheme).observe(root,{attributes:true,attributeFilter:["data-theme"]});
+  window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",readTheme);
+  // ---- download the full KG as CSV (embedded, base64) ----
+  function dlB64(b64, fname){
+    const bin=atob(b64), bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const u=URL.createObjectURL(new Blob([bytes],{type:"text/csv"}));
+    const a=document.createElement("a"); a.href=u; a.download=fname;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);
+  }
+  document.getElementById("dlNodes").addEventListener("click",()=>dlB64(NODES_B64,"kg_nodes.csv"));
+  document.getElementById("dlEdges").addEventListener("click",()=>dlB64(EDGES_B64,"kg_edges.csv"));
+
+  resize(); requestAnimationFrame(draw);
+})();
+</script>
