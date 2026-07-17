@@ -32,6 +32,17 @@ COL = {"kingdom": "#5b21b6", "organism": "#c2418c", "element": "#1f6fd0",
 SIZE = {"kingdom": 190, "organism": 70, "element": 90, "parameter": 130, "hotspot": 3}
 POS_C, NEG_C, BONE_C, HOT_C = "#1f6fd0", "#d1345b", "#b0367f", "#f0c3d9"
 
+# Full element names. NOTE: the KG label column mislabels ens/ene as "intron/
+# splice site" — they are ENHANCER boundaries (extracted from total_*_enhancers_;
+# build_sequence_manifest.py:30-31). Use the correct names here.
+ELEMENT_NAME = {
+    "gs": "gene_start", "ge": "gene_end", "prom": "promoter",
+    "5utrs": "5utr_start", "5utre": "5utr_end", "3utrs": "3utr_start", "3utre": "3utr_end",
+    "ens": "enhancer_start", "ene": "enhancer_end",
+    "es": "exon_start", "ee": "exon_end",
+    "stac": "start_codon", "stoc": "stop_codon", "cds": "cds",
+}
+
 nodes = pd.read_csv(f"{KGDIR}/kg_nodes.csv")
 edges = pd.read_csv(f"{KGDIR}/kg_edges.csv")
 
@@ -44,6 +55,9 @@ for _, r in nodes.iterrows():
     sci = r.get("scientific_name")
     if nt == "organism" and isinstance(sci, str) and sci.strip():
         nname[nid] = sci.strip().lower().replace(" ", "_")
+    elif nt == "element":
+        code = str(nid).split(":")[-1]
+        nname[nid] = ELEMENT_NAME.get(code, code)
     else:
         nname[nid] = str(nid).split(":")[-1]
 for _, r in edges.iterrows():
