@@ -151,14 +151,14 @@
 
     <div class="grp">
       <h2>Download the graph</h2>
-      <div class="dldesc">The complete graph as CSV — nodes (type, name, profile stats) and edges
+      <div class="dldesc">The complete graph as CSV - nodes (type, name, profile stats) and edges
         (relation, per-organism profile means, correlation r).</div>
       <a class="dlbtn" id="dlNodes" download="kg_nodes.csv" href="#" target="_blank" rel="noopener">&#8595; Nodes &nbsp;(1,757 &times; 27)</a>
       <a class="dlbtn" id="dlEdges" download="kg_edges.csv" href="#" target="_blank" rel="noopener">&#8595; Edges &nbsp;(7,265 &times; 12)</a>
     </div>
 
     <div class="note">
-      Layout reflects <b>connectivity, not similarity</b> — distances are emergent, not quantitative.
+      Layout reflects <b>connectivity, not similarity</b> - distances are emergent, not quantitative.
       Correlation edges are sign-coloured (blue +r, red −r); an anti-correlated pair is an opposition,
       not a kinship.
     </div>
@@ -234,7 +234,7 @@ const EDGES_B64 = "__EDGES_B64__";
     const cnt={}; adj[i].forEach(a=>{const t=N[a.o].t; cnt[t]=(cnt[t]||0)+1;});
     let chips=""; TYPE_ORDER.forEach(t=>{ if(cnt[t]) chips+='<span class="chip"><i style="background:'+
       COL[t]+'"></i>'+cnt[t]+' '+t+(cnt[t]>1?"s":"")+'</span>'; });
-    let desc=TYPE_DESC[n.t]; if(n.t==="parameter"&&PARAM_DESC[n.n]) desc=PARAM_DESC[n.n]+" — "+desc;
+    let desc=TYPE_DESC[n.t]; if(n.t==="parameter"&&PARAM_DESC[n.n]) desc=PARAM_DESC[n.n]+" - "+desc;
     let html='<h2>Selected node</h2>'+
       '<div class="rname" style="color:'+col+'">'+esc(n.n||"hotspot")+'</div>'+
       '<div class="rmeta mono">'+n.t+' · degree '+n.d+'</div>'+
@@ -336,7 +336,7 @@ const EDGES_B64 = "__EDGES_B64__";
   new MutationObserver(readTheme).observe(root,{attributes:true,attributeFilter:["data-theme"]});
   window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",readTheme);
   // ---- download the full KG as CSV (embedded) ----
-  // Real <a download> with a blob object URL — the most broadly permitted download
+  // Real <a download> with a blob object URL - the most broadly permitted download
   // path (works on GitHub Pages / locally; a sandboxed preview may still block it).
   function blobUrl(b64){
     const bin=atob(b64), bytes=new Uint8Array(bin.length);

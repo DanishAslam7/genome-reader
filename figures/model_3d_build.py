@@ -13,7 +13,7 @@ def add(id,name,x,y,z,group,geom,shape="",params="",role="",why="",label=""):
 
 add("profile","Biophysical profile",-42,0,0,"bio",block(475,7),"475 × 7","","input · 7 mechanical parameters",
     "The only input to the reported model: seven DNA biophysical/mechanical parameters per position "
-    "(hydrogen-bonding, stacking, solvation, backbone and base-pair geometry) — with no nucleotide identity. "
+    "(hydrogen-bonding, stacking, solvation, backbone and base-pair geometry) - with no nucleotide identity. "
     "The network reads DNA as a physical object, not a string of letters.","profile")
 add("scale","ParameterScale",-35,0,0,"prior",block(475,7,hx=0.6),"× fixed weights","0 (non-trainable)",
     "fixed prior channel weighting",
@@ -32,29 +32,29 @@ add("fuse","Fuse",14,0,0,"bio",vec(176),"⊕ → 176","62,288","concat trunk + d
     "shared vector.","fuse")
 add("shared","Shared representation",22,0,0,"shared",vec(176),"176-dim","","read by all nine heads",
     "One vector feeds every head. Because two heads are adversarial (right), the trunk is pushed to make this "
-    "vector predict elements while NOT revealing which organism or kingdom a window came from — the origin of "
+    "vector predict elements while NOT revealing which organism or kingdom a window came from - the origin of "
     "cross-species transfer.","SHARED")
 
 add("complexity","Profile-complexity branch",5,-12,6,"bio",vec(48),"14 stats/ch → 48","","derived · always on","")
 add("startstop","Start/stop-contrast branch",5,-17,-5,"bio",vec(32),"L/C/R windows → 32","","derived · always on","")
 add("sequence","Sequence branch",0,12,7,"seq",block(501,4),"one-hot 501×4 → 96","+424,256","optional ablation arm",
     "Not in the reported model. Added, it costs +19.3% parameters and buys +1.08 pp element accuracy "
-    "in-distribution — but 0.00 on an unseen diatom lineage and −6.5 pp on prokaryotes. Sequence's value "
+    "in-distribution - but 0.00 on an unseen diatom lineage and −6.5 pp on prokaryotes. Sequence's value "
     "decays with evolutionary distance and can turn negative; biophysics does not.","sequence")
 add("kg","Knowledge-graph branch",5,17,-6,"kg",vec(48),"context nodes → 48","","off for all transfer",
-    "Injects organism/kingdom context-node features. Cohort-derived, so it leaks across a held-out kingdom — "
+    "Injects organism/kingdom context-node features. Cohort-derived, so it leaks across a held-out kingdom - "
     "switched OFF for every cross-kingdom and external result. Contributes +1.38 pp only in-distribution.","KG")
 
-add("element","Element head",34,0,0,"elem",head(5,big=True),"5 classes","loss ×2.5","REPORTED — the target",
+add("element","Element head",34,0,0,"elem",head(5,big=True),"5 classes","loss ×2.5","REPORTED - the target",
     "The only head reported in the paper: promoter, gene and exon boundaries, start and stop codons. It reads "
     "element identity from the species-invariant shared representation.","element")
 add("organism","Organism head",31,8,6,"grl",head(32),"32 classes","loss ×1.0 · GRL λ=0.005","adversary (gradient reversal)",
     "Gradient reversal: on backprop its gradient is negated, so the trunk is trained to FAIL at telling "
-    "organisms apart. This erases organism identity from the features — the mechanism behind cross-organism "
+    "organisms apart. This erases organism identity from the features - the mechanism behind cross-organism "
     "generalization. Red particles show the reversed signal flowing back.","organism")
 add("kingdom","Kingdom head",31,12,-4,"grl",head(4),"4 classes","loss ×0.5 · GRL λ=0.08","adversary (gradient reversal)",
     "The same adversary at kingdom level, with a stronger λ=0.08. It is the direct engine of cross-KINGDOM "
-    "universality — the paper's headline transfer result.","kingdom")
+    "universality - the paper's headline transfer result.","kingdom")
 add("human","Human UTR/enhancer head",31,-7,6,"aux",head(3),"3 classes","loss ×1.0","auxiliary · masked to human","")
 add("biogroup","Biological-group head",31,-11,-4,"aux",head(4),"4 classes","loss ×0.8","auxiliary","")
 add("coding","Coding detector",31,-15,6,"aux",head(2),"2 classes","loss ×0.5","auxiliary","")
@@ -72,22 +72,22 @@ e("shared","organism","grl"); e("shared","kingdom","grl")
 
 
 NOTES={
- "profile":"The input the whole model rests on: physics, not letters — 7 mechanical parameters, no bases.",
+ "profile":"The input the whole model rests on: physics, not letters - 7 mechanical parameters, no bases.",
  "scale":"A disclosed fixed prior. The model is handed this weighting, never credited with discovering it.",
  "stem":"Lifts the 7 physical channels into a 256-d feature space.",
  "stage1":"Downsamples position while a residual block mixes local context.",
- "stage2":"Second downsample — the receptive field widens over the window.",
+ "stage2":"Second downsample - the receptive field widens over the window.",
  "stage3":"Final trunk features, just before pooling.",
  "pool":"Collapses the position axis into one fixed-length vector.",
  "fuse":"Joins the pooled trunk with the two always-on derived branches.",
- "shared":"The single representation every head reads — made species-invariant by the adversaries.",
+ "shared":"The single representation every head reads - made species-invariant by the adversaries.",
  "complexity":"Hand-derived per-channel statistics; always on.",
  "startstop":"Left / centre / right contrast windows; always on.",
  "sequence":"Optional. Its benefit shrinks, then reverses, with evolutionary distance.",
  "kg":"Cohort-derived context; leaks across kingdoms, so switched off for every transfer result.",
  "element":"The reported output: which genomic site this window is.",
- "organism":"Adversary — trains the trunk to FORGET the organism. That is what makes features transfer.",
- "kingdom":"Adversary at kingdom level — the direct driver of cross-kingdom universality.",
+ "organism":"Adversary - trains the trunk to FORGET the organism. That is what makes features transfer.",
+ "kingdom":"Adversary at kingdom level - the direct driver of cross-kingdom universality.",
  "human":"Auxiliary, human-only labels (UTR / enhancer boundaries).",
  "biogroup":"Auxiliary grouping head; part of the multitask signal shaping the trunk.",
  "coding":"Auxiliary coding / non-coding signal.",
@@ -106,8 +106,8 @@ body=tpl.replace("__ARCHDATA__",data).replace("__PILOT__",pilot)
 open("figures/model_3d_artifact.html","w").write(body)
 doc=('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
 '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-'<title>Model Architecture — 3D</title>\n'
+'<title>Model Architecture - 3D</title>\n'
 '<meta name="description" content="Interactive 3D model of the multitask convolutional architecture.">\n'
 '</head>\n<body>\n'+body+'\n</body>\n</html>\n')
 open("figures/model_3d.html","w").write(doc)
-print("layers",len(L),"edges",len(E),"— rebuilt")
+print("layers",len(L),"edges",len(E),"- rebuilt")
