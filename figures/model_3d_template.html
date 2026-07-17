@@ -73,6 +73,17 @@
     background:var(--panel); padding:6px 14px; border:1px solid var(--line); border-radius:999px;
     backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:none}
   .hint .mono{color:var(--ink)}
+  .pdis{font-size:10.5px; color:var(--muted); line-height:1.45; margin-bottom:9px}
+  .psel{width:100%; padding:7px 8px; border-radius:8px; border:1px solid var(--line); background:var(--chip);
+    color:var(--ink); font-size:12px; font-family:inherit}
+  .prun{width:100%; margin-top:8px; padding:8px; border-radius:8px; border:none; cursor:pointer;
+    background:var(--g-elem); color:#1a1200; font-weight:700; font-size:12.5px}
+  .prun:active{transform:translateY(1px)}
+  .pres{margin-top:10px; font-size:12px; line-height:1.5; min-height:1.2em}
+  .pres b{font-weight:700}
+  .pcsv{width:100%; margin-top:9px; padding:7px; border-radius:8px; border:1px solid var(--line);
+    background:none; color:var(--ink); cursor:pointer; font-size:11.5px; font-family:inherit}
+  .pcsv:hover{background:var(--chip)}
   #tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .12s; background:var(--label-bg);
     border:1px solid var(--line); border-radius:9px; padding:7px 10px; font-size:12px; box-shadow:var(--shadow);
     backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:5; max-width:240px}
@@ -117,6 +128,16 @@
       <label class="toggle"><input type="checkbox" id="tSpin" checked><span class="lab">Auto-rotate</span></label>
     </div>
 
+    <div class="grp">
+      <h2>Prediction pilot</h2>
+      <div class="pdis">Real outputs of the trained model on held-out test windows (11-organism
+        reference run, precomputed). Live inference on new sequences → the Genome Reader web app.</div>
+      <select id="pSel" class="psel" aria-label="Choose a sample"></select>
+      <button id="pRun" class="prun">▶ Run through the network</button>
+      <div id="pRes" class="pres">Pick a real held-out window, then watch it flow to the element head.</div>
+      <button id="pCsv" class="pcsv">⤓ Download all results (CSV)</button>
+    </div>
+
     <div class="note">
       The trunk sees <b>only mechanics</b> — seven physical parameters, no nucleotides. The two
       gradient-reversal heads train the shared features to be <b>species-invariant</b>, which is why the
@@ -131,6 +152,7 @@
 
 <script>
 const ARCH = __ARCHDATA__;
+const PILOT = __PILOT__;
 (function(){
   const cv=document.getElementById("cv"), ctx=cv.getContext("2d"), tip=document.getElementById("tip");
   const stage=document.getElementById("stage"), readoutEl=document.getElementById("readout"), root=document.documentElement;
@@ -212,6 +234,44 @@ const ARCH = __ARCHDATA__;
   }
   function setFocus(i){focus=i; renderReadout(i);}
 
+  // ---- prediction pilot ----
+  const PATH=["profile","scale","stem","stage1","stage2","stage3","pool","fuse","shared","element"];
+  let pkt=null, elemGlow=0;
+  const pSel=$("pSel"), pRun=$("pRun"), pRes=$("pRes"), pCsv=$("pCsv");
+  PILOT.forEach((s,i)=>{const o=document.createElement("option"); o.value=i;
+    o.textContent=s.true+" · "+s.org+(s.ok?"":"  (miss)"); pSel.appendChild(o);});
+  pRun.addEventListener("click",()=>{ const i=+pSel.value; pkt={t:0,s:PILOT[i]};
+    pRes.innerHTML='<span style="color:var(--muted)">running '+PILOT[i].true+' · '+PILOT[i].org+' …</span>'; });
+  function showRes(s){ const c=s.ok?"var(--g-seq)":"var(--g-grl)";
+    pRes.innerHTML='<b>'+s.org+'</b> · true '+s.true+' → predicted <b style="color:'+c+'">'+s.pred+'</b> '+
+      (s.ok?'✓':'✗ (miss)'); }
+  function drawPacket(){
+    if(elemGlow>0){ const c=center2d(byId.element); ctx.beginPath();
+      ctx.arc(c[0],c[1], 16+8*Math.sin(tt*8), 0, 6.2832); ctx.strokeStyle=C.elem;
+      ctx.globalAlpha=elemGlow*0.6; ctx.lineWidth=2.4; ctx.stroke(); ctx.globalAlpha=1; elemGlow-=0.012; }
+    if(!pkt) return;
+    pkt.t+=0.010;
+    if(pkt.t>=1){ showRes(pkt.s); elemGlow=1; pkt=null; return; }
+    const seg=Math.min(PATH.length-2, Math.floor(pkt.t*(PATH.length-1)));
+    const loc=pkt.t*(PATH.length-1)-seg;
+    const a=center2d(byId[PATH[seg]]), b=center2d(byId[PATH[seg+1]]);
+    const x=a[0]+(b[0]-a[0])*loc, y=a[1]+(b[1]-a[1])*loc;
+    for(let g=3;g>=1;g--){ ctx.beginPath(); ctx.arc(x,y,g*3.2,0,6.2832);
+      ctx.fillStyle=C.elem; ctx.globalAlpha=0.16*g/3; ctx.fill(); }
+    ctx.beginPath(); ctx.arc(x,y,4.2,0,6.2832); ctx.fillStyle=C.elem; ctx.globalAlpha=1; ctx.fill();
+    ctx.globalAlpha=1; ctx.font="600 10px system-ui,sans-serif"; ctx.textAlign="center";
+    ctx.fillStyle=BG.label; ctx.fillText(pkt.s.true, x, y-11);
+  }
+  function toCSV(){
+    const rows=[["organism","kingdom","true_element","predicted_element","correct"]];
+    PILOT.forEach(s=>rows.push([s.org,s.kingdom,s.true,s.pred,s.ok?"yes":"no"]));
+    const txt=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+    const blob=new Blob([txt],{type:"text/csv"}), u=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=u; a.download="genome_reader_pilot_predictions.csv";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);
+  }
+  pCsv.addEventListener("click",toCSV);
+
   function draw(){
     CX=W*0.42; CY=H*0.52; S=Math.min(W,H)*0.011*zoom;
     const g=ctx.createRadialGradient(W/2,H*0.4,0,W/2,H*0.4,Math.max(W,H)*0.8);
@@ -261,7 +321,8 @@ const ARCH = __ARCHDATA__;
       cv.style.cursor=dragging?"grabbing":"pointer";
     } else {tip.style.opacity=0; cv.style.cursor=dragging?"grabbing":"grab";}
 
-    tt+=0.0045; if(spin&&!dragging&&focus<0) ay+=0.0016;
+    drawPacket();
+    tt+=0.0045; if(spin&&!dragging&&focus<0&&!pkt) ay+=0.0016;
     requestAnimationFrame(draw);
   }
   function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);

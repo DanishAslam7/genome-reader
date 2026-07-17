@@ -74,7 +74,8 @@ arch=dict(layers=L, edges=E)
 json.dump(arch, open("figures/arch_3d.json","w"))
 tpl=open("figures/model_3d_template.html").read()
 data=json.dumps(arch, separators=(",",":"))
-body=tpl.replace("__ARCHDATA__",data)
+pilot=open("figures/pilot_samples.json").read().strip()
+body=tpl.replace("__ARCHDATA__",data).replace("__PILOT__",pilot)
 open("figures/model_3d_artifact.html","w").write(body)
 doc=('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
 '<meta name="viewport" content="width=device-width, initial-scale=1">\n'

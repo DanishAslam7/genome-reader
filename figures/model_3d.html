@@ -82,6 +82,17 @@
     background:var(--panel); padding:6px 14px; border:1px solid var(--line); border-radius:999px;
     backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:none}
   .hint .mono{color:var(--ink)}
+  .pdis{font-size:10.5px; color:var(--muted); line-height:1.45; margin-bottom:9px}
+  .psel{width:100%; padding:7px 8px; border-radius:8px; border:1px solid var(--line); background:var(--chip);
+    color:var(--ink); font-size:12px; font-family:inherit}
+  .prun{width:100%; margin-top:8px; padding:8px; border-radius:8px; border:none; cursor:pointer;
+    background:var(--g-elem); color:#1a1200; font-weight:700; font-size:12.5px}
+  .prun:active{transform:translateY(1px)}
+  .pres{margin-top:10px; font-size:12px; line-height:1.5; min-height:1.2em}
+  .pres b{font-weight:700}
+  .pcsv{width:100%; margin-top:9px; padding:7px; border-radius:8px; border:1px solid var(--line);
+    background:none; color:var(--ink); cursor:pointer; font-size:11.5px; font-family:inherit}
+  .pcsv:hover{background:var(--chip)}
   #tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .12s; background:var(--label-bg);
     border:1px solid var(--line); border-radius:9px; padding:7px 10px; font-size:12px; box-shadow:var(--shadow);
     backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:5; max-width:240px}
@@ -126,6 +137,16 @@
       <label class="toggle"><input type="checkbox" id="tSpin" checked><span class="lab">Auto-rotate</span></label>
     </div>
 
+    <div class="grp">
+      <h2>Prediction pilot</h2>
+      <div class="pdis">Real outputs of the trained model on held-out test windows (11-organism
+        reference run, precomputed). Live inference on new sequences → the Genome Reader web app.</div>
+      <select id="pSel" class="psel" aria-label="Choose a sample"></select>
+      <button id="pRun" class="prun">▶ Run through the network</button>
+      <div id="pRes" class="pres">Pick a real held-out window, then watch it flow to the element head.</div>
+      <button id="pCsv" class="pcsv">⤓ Download all results (CSV)</button>
+    </div>
+
     <div class="note">
       The trunk sees <b>only mechanics</b> — seven physical parameters, no nucleotides. The two
       gradient-reversal heads train the shared features to be <b>species-invariant</b>, which is why the
@@ -140,6 +161,7 @@
 
 <script>
 const ARCH = {"layers":[{"id":"profile","name":"Biophysical profile","x":-42,"y":0,"z":0,"group":"bio","shape":"475 \u00d7 7","params":"","role":"input \u00b7 7 mechanical parameters","why":"The only input to the reported model: seven DNA biophysical/mechanical parameters per position (hydrogen-bonding, stacking, solvation, backbone and base-pair geometry) \u2014 with no nucleotide identity. The network reads DNA as a physical object, not a string of letters.","label":"profile","hx":1.5,"hy":9.0,"hz":0.71},{"id":"scale","name":"ParameterScale","x":-35,"y":0,"z":0,"group":"prior","shape":"\u00d7 fixed weights","params":"0 (non-trainable)","role":"fixed prior channel weighting","why":"A non-trainable per-channel multiplier (hbond, stack \u00d72.0; four channels \u00d71.4; inter \u00d71.0) taken from a prior molecular-dynamics study and fixed before any training. Disclosed so the model is never credited with 'discovering' a weighting it was handed.","label":"\u00d7 scale","hx":0.6,"hy":9.0,"hz":0.71},{"id":"stem","name":"Stem convolution","x":-28,"y":0,"z":0,"group":"bio","shape":"k=7 \u2192 256","params":"12,800","role":"lift 7 \u2192 256 channels","why":"","label":"stem","hx":1.5,"hy":9.0,"hz":4.8},{"id":"stage1","name":"ConvNeXt stage 1","x":-20,"y":0,"z":0,"group":"bio","shape":"475 \u2192 238","params":"","role":"downsample \u00d72","why":"Three ConvNeXt-style stages, one block each: depthwise k=7 conv \u2192 LayerNorm \u2192 Dense 1024 (4\u00d7 expand) \u2192 Dense 256, with a residual connection. Stride-2 downsampling halves the position axis at each stage.","label":"stage 1","hx":1.5,"hy":5.01,"hz":4.8},{"id":"stage2","name":"ConvNeXt stage 2","x":-12,"y":0,"z":0,"group":"bio","shape":"238 \u2192 119","params":"","role":"downsample \u00d72","why":"","label":"stage 2","hx":1.5,"hy":3.0,"hz":4.8},{"id":"stage3","name":"ConvNeXt stage 3","x":-4,"y":0,"z":0,"group":"bio","shape":"119 \u00d7 256","params":"trunk \u2248 1.79 M","role":"final trunk stage","why":"","label":"stage 3","hx":1.5,"hy":3.0,"hz":4.8},{"id":"pool","name":"Pool \u2192 dense","x":6,"y":0,"z":0,"group":"bio","shape":"\u2192 128","params":"98,688","role":"collapse positions","why":"","label":"pool","hx":1.6,"hy":2.21,"hz":2.21},{"id":"fuse","name":"Fuse","x":14,"y":0,"z":0,"group":"bio","shape":"\u2295 \u2192 176","params":"62,288","role":"concat trunk + derived branches","why":"The pooled trunk is concatenated with the two always-on derived branches to form the 176-dimensional shared vector.","label":"fuse","hx":1.6,"hy":2.74,"hz":2.74},{"id":"shared","name":"Shared representation","x":22,"y":0,"z":0,"group":"shared","shape":"176-dim","params":"","role":"read by all nine heads","why":"One vector feeds every head. Because two heads are adversarial (right), the trunk is pushed to make this vector predict elements while NOT revealing which organism or kingdom a window came from \u2014 the origin of cross-species transfer.","label":"SHARED","hx":1.6,"hy":2.74,"hz":2.74},{"id":"complexity","name":"Profile-complexity branch","x":5,"y":-12,"z":6,"group":"bio","shape":"14 stats/ch \u2192 48","params":"","role":"derived \u00b7 always on","why":"","label":"","hx":1.6,"hy":1.33,"hz":1.33},{"id":"startstop","name":"Start/stop-contrast branch","x":5,"y":-17,"z":-5,"group":"bio","shape":"L/C/R windows \u2192 32","params":"","role":"derived \u00b7 always on","why":"","label":"","hx":1.6,"hy":1.15,"hz":1.15},{"id":"sequence","name":"Sequence branch","x":0,"y":12,"z":7,"group":"seq","shape":"one-hot 501\u00d74 \u2192 96","params":"+424,256","role":"optional ablation arm","why":"Not in the reported model. Added, it costs +19.3% parameters and buys +1.08 pp element accuracy in-distribution \u2014 but 0.00 on an unseen diatom lineage and \u22126.5 pp on prokaryotes. Sequence's value decays with evolutionary distance and can turn negative; biophysics does not.","label":"sequence","hx":1.5,"hy":9.44,"hz":0.67},{"id":"kg","name":"Knowledge-graph branch","x":5,"y":17,"z":-6,"group":"kg","shape":"context nodes \u2192 48","params":"","role":"off for all transfer","why":"Injects organism/kingdom context-node features. Cohort-derived, so it leaks across a held-out kingdom \u2014 switched OFF for every cross-kingdom and external result. Contributes +1.38 pp only in-distribution.","label":"KG","hx":1.6,"hy":1.33,"hz":1.33},{"id":"element","name":"Element head","x":34,"y":0,"z":0,"group":"elem","shape":"5 classes","params":"loss \u00d72.5","role":"REPORTED \u2014 the target","why":"The only head reported in the paper: promoter, gene and exon boundaries, start and stop codons. It reads element identity from the species-invariant shared representation.","label":"element","hx":1.7,"hy":1.75,"hz":1.75},{"id":"organism","name":"Organism head","x":31,"y":8,"z":6,"group":"grl","shape":"32 classes","params":"loss \u00d71.0 \u00b7 GRL \u03bb=0.005","role":"adversary (gradient reversal)","why":"Gradient reversal: on backprop its gradient is negated, so the trunk is trained to FAIL at telling organisms apart. This erases organism identity from the features \u2014 the mechanism behind cross-organism generalization. Red particles show the reversed signal flowing back.","label":"organism","hx":1.1,"hy":2.6,"hz":2.6},{"id":"kingdom","name":"Kingdom head","x":31,"y":12,"z":-4,"group":"grl","shape":"4 classes","params":"loss \u00d70.5 \u00b7 GRL \u03bb=0.08","role":"adversary (gradient reversal)","why":"The same adversary at kingdom level, with a stronger \u03bb=0.08. It is the direct engine of cross-KINGDOM universality \u2014 the paper's headline transfer result.","label":"kingdom","hx":1.1,"hy":1.2,"hz":1.2},{"id":"human","name":"Human UTR/enhancer head","x":31,"y":-7,"z":6,"group":"aux","shape":"3 classes","params":"loss \u00d71.0","role":"auxiliary \u00b7 masked to human","why":"","label":"","hx":1.1,"hy":1.15,"hz":1.15},{"id":"biogroup","name":"Biological-group head","x":31,"y":-11,"z":-4,"group":"aux","shape":"4 classes","params":"loss \u00d70.8","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.2,"hz":1.2},{"id":"coding","name":"Coding detector","x":31,"y":-15,"z":6,"group":"aux","shape":"2 classes","params":"loss \u00d70.5","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.1,"hz":1.1},{"id":"pair","name":"Start/stop-pair head","x":31,"y":16,"z":6,"group":"aux","shape":"2 classes","params":"loss \u00d70.4","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.1,"hz":1.1},{"id":"coarse","name":"Coarse-element head","x":31,"y":-19,"z":-5,"group":"aux","shape":"7 classes","params":"loss \u00d70.3","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.35,"hz":1.35},{"id":"utr","name":"UTR-subtype head","x":31,"y":20,"z":-4,"group":"aux","shape":"2 classes","params":"loss \u00d70.2","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.1,"hz":1.1}],"edges":[{"s":"profile","t":"scale","k":"fwd"},{"s":"scale","t":"stem","k":"fwd"},{"s":"stem","t":"stage1","k":"fwd"},{"s":"stage1","t":"stage2","k":"fwd"},{"s":"stage2","t":"stage3","k":"fwd"},{"s":"stage3","t":"pool","k":"fwd"},{"s":"pool","t":"fuse","k":"fwd"},{"s":"fuse","t":"shared","k":"fwd"},{"s":"complexity","t":"fuse","k":"fwd"},{"s":"startstop","t":"fuse","k":"fwd"},{"s":"sequence","t":"fuse","k":"fwd"},{"s":"kg","t":"fuse","k":"fwd"},{"s":"shared","t":"element","k":"fwd"},{"s":"shared","t":"human","k":"fwd"},{"s":"shared","t":"biogroup","k":"fwd"},{"s":"shared","t":"coding","k":"fwd"},{"s":"shared","t":"pair","k":"fwd"},{"s":"shared","t":"coarse","k":"fwd"},{"s":"shared","t":"utr","k":"fwd"},{"s":"shared","t":"organism","k":"grl"},{"s":"shared","t":"kingdom","k":"grl"}]};
+const PILOT = [{"org": "Rattus norvegicus", "kingdom": "animalia", "true": "exon boundary", "pred": "exon boundary", "ok": true}, {"org": "Arabidopsis thaliana", "kingdom": "plantae", "true": "exon boundary", "pred": "exon boundary", "ok": true}, {"org": "Caenorhabditis elegans", "kingdom": "animalia", "true": "gene boundary", "pred": "gene boundary", "ok": true}, {"org": "Caenorhabditis elegans", "kingdom": "animalia", "true": "gene boundary", "pred": "gene boundary", "ok": true}, {"org": "Caenorhabditis elegans", "kingdom": "animalia", "true": "promoter", "pred": "promoter", "ok": true}, {"org": "Rattus norvegicus", "kingdom": "animalia", "true": "promoter", "pred": "promoter", "ok": true}, {"org": "Kluyveromyces lactis", "kingdom": "fungi", "true": "start codon", "pred": "start codon", "ok": true}, {"org": "Zea mays", "kingdom": "plantae", "true": "start codon", "pred": "start codon", "ok": true}, {"org": "Rattus norvegicus", "kingdom": "animalia", "true": "stop codon", "pred": "stop codon", "ok": true}, {"org": "Homo sapiens", "kingdom": "animalia", "true": "stop codon", "pred": "stop codon", "ok": true}, {"org": "Kluyveromyces lactis", "kingdom": "fungi", "true": "promoter", "pred": "gene boundary", "ok": false}, {"org": "Saccharomyces cerevisiae", "kingdom": "fungi", "true": "exon boundary", "pred": "gene boundary", "ok": false}, {"org": "Mus musculus", "kingdom": "animalia", "true": "gene boundary", "pred": "promoter", "ok": false}];
 (function(){
   const cv=document.getElementById("cv"), ctx=cv.getContext("2d"), tip=document.getElementById("tip");
   const stage=document.getElementById("stage"), readoutEl=document.getElementById("readout"), root=document.documentElement;
@@ -221,6 +243,44 @@ const ARCH = {"layers":[{"id":"profile","name":"Biophysical profile","x":-42,"y"
   }
   function setFocus(i){focus=i; renderReadout(i);}
 
+  // ---- prediction pilot ----
+  const PATH=["profile","scale","stem","stage1","stage2","stage3","pool","fuse","shared","element"];
+  let pkt=null, elemGlow=0;
+  const pSel=$("pSel"), pRun=$("pRun"), pRes=$("pRes"), pCsv=$("pCsv");
+  PILOT.forEach((s,i)=>{const o=document.createElement("option"); o.value=i;
+    o.textContent=s.true+" · "+s.org+(s.ok?"":"  (miss)"); pSel.appendChild(o);});
+  pRun.addEventListener("click",()=>{ const i=+pSel.value; pkt={t:0,s:PILOT[i]};
+    pRes.innerHTML='<span style="color:var(--muted)">running '+PILOT[i].true+' · '+PILOT[i].org+' …</span>'; });
+  function showRes(s){ const c=s.ok?"var(--g-seq)":"var(--g-grl)";
+    pRes.innerHTML='<b>'+s.org+'</b> · true '+s.true+' → predicted <b style="color:'+c+'">'+s.pred+'</b> '+
+      (s.ok?'✓':'✗ (miss)'); }
+  function drawPacket(){
+    if(elemGlow>0){ const c=center2d(byId.element); ctx.beginPath();
+      ctx.arc(c[0],c[1], 16+8*Math.sin(tt*8), 0, 6.2832); ctx.strokeStyle=C.elem;
+      ctx.globalAlpha=elemGlow*0.6; ctx.lineWidth=2.4; ctx.stroke(); ctx.globalAlpha=1; elemGlow-=0.012; }
+    if(!pkt) return;
+    pkt.t+=0.010;
+    if(pkt.t>=1){ showRes(pkt.s); elemGlow=1; pkt=null; return; }
+    const seg=Math.min(PATH.length-2, Math.floor(pkt.t*(PATH.length-1)));
+    const loc=pkt.t*(PATH.length-1)-seg;
+    const a=center2d(byId[PATH[seg]]), b=center2d(byId[PATH[seg+1]]);
+    const x=a[0]+(b[0]-a[0])*loc, y=a[1]+(b[1]-a[1])*loc;
+    for(let g=3;g>=1;g--){ ctx.beginPath(); ctx.arc(x,y,g*3.2,0,6.2832);
+      ctx.fillStyle=C.elem; ctx.globalAlpha=0.16*g/3; ctx.fill(); }
+    ctx.beginPath(); ctx.arc(x,y,4.2,0,6.2832); ctx.fillStyle=C.elem; ctx.globalAlpha=1; ctx.fill();
+    ctx.globalAlpha=1; ctx.font="600 10px system-ui,sans-serif"; ctx.textAlign="center";
+    ctx.fillStyle=BG.label; ctx.fillText(pkt.s.true, x, y-11);
+  }
+  function toCSV(){
+    const rows=[["organism","kingdom","true_element","predicted_element","correct"]];
+    PILOT.forEach(s=>rows.push([s.org,s.kingdom,s.true,s.pred,s.ok?"yes":"no"]));
+    const txt=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+    const blob=new Blob([txt],{type:"text/csv"}), u=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=u; a.download="genome_reader_pilot_predictions.csv";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);
+  }
+  pCsv.addEventListener("click",toCSV);
+
   function draw(){
     CX=W*0.42; CY=H*0.52; S=Math.min(W,H)*0.011*zoom;
     const g=ctx.createRadialGradient(W/2,H*0.4,0,W/2,H*0.4,Math.max(W,H)*0.8);
@@ -270,7 +330,8 @@ const ARCH = {"layers":[{"id":"profile","name":"Biophysical profile","x":-42,"y"
       cv.style.cursor=dragging?"grabbing":"pointer";
     } else {tip.style.opacity=0; cv.style.cursor=dragging?"grabbing":"grab";}
 
-    tt+=0.0045; if(spin&&!dragging&&focus<0) ay+=0.0016;
+    drawPacket();
+    tt+=0.0045; if(spin&&!dragging&&focus<0&&!pkt) ay+=0.0016;
     requestAnimationFrame(draw);
   }
   function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
