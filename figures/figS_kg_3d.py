@@ -37,8 +37,15 @@ edges = pd.read_csv(f"{KGDIR}/kg_edges.csv")
 
 G = nx.Graph(); ntype = {}; nname = {}
 for _, r in nodes.iterrows():
-    G.add_node(r["node_id"]); ntype[r["node_id"]] = r["node_type"]
-    nname[r["node_id"]] = str(r["node_id"]).split(":")[-1]
+    nid, nt = r["node_id"], r["node_type"]
+    G.add_node(nid); ntype[nid] = nt
+    # organisms: display uniform genus_species (from scientific_name), so the
+    # originally-studied set (fly, human, ...) matches the newer accessions.
+    sci = r.get("scientific_name")
+    if nt == "organism" and isinstance(sci, str) and sci.strip():
+        nname[nid] = sci.strip().lower().replace(" ", "_")
+    else:
+        nname[nid] = str(nid).split(":")[-1]
 for _, r in edges.iterrows():
     if r["source"] in ntype and r["target"] in ntype:
         rv = r.get("pearson_r", None)
