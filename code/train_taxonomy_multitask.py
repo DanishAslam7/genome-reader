@@ -119,6 +119,10 @@ ELEMENT_COARSE = {
     "5utre": "utr5",
     "3utrs": "utr3",
     "3utre": "utr3",
+    # NOTE: "intron_boundary" is a legacy misnomer — ens/ene are ENHANCER start/end
+    # (extracted from total_*_enhancers_; see build_sequence_manifest.py). The name is
+    # kept only because it is frozen in the deposited label schemas / trained weights;
+    # do not rename without regenerating those. The 14-element vocabulary has no intron class.
     "ens": "intron_boundary",
     "ene": "intron_boundary",
     "es": "exon_boundary",
