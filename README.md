@@ -12,6 +12,7 @@ which physical property encodes which element.
 > **▶ Interactive 3D knowledge graph (live):**
 > https://danishaslam7.github.io/genome-reader/figures/kg_3d.html — rotate the actual 1,757-node graph
 > in your browser.
+> 
 > **▶ Interactive 3D model architecture (live):**
 > https://danishaslam7.github.io/genome-reader/figures/model_3d.html — rotate the network, click any
 > layer, toggle the sequence branch and the gradient-reversal adversaries.
