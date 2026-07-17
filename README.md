@@ -120,9 +120,12 @@ quantitative).
 `figures/model_3d.html` is a self-contained, rotatable 3D model of the network architecture. Drag to
 rotate, scroll to zoom, click any layer to read its shape/parameters/role, and use the toggles to add
 the sequence branch or highlight the two gradient-reversal adversaries (organism λ=0.005, kingdom
-λ=0.08) that make the shared representation species-invariant. Every shape and parameter count is read
-from the trained checkpoint; regenerate with `python figures/model_3d_build.py`. Same view options as
-the knowledge graph (local download or GitHub Pages).
+λ=0.08) that make the shared representation species-invariant. It also includes a **prediction pilot**:
+pick a real held-out test window and run it through the network to see the trained model's actual
+predicted element as a bar chart, with a CSV export of the results (precomputed on the 11-organism
+reference run — not live inference). Every shape and parameter count is read from the trained
+checkpoint; regenerate with `python figures/model_3d_build.py`. Same view options as the knowledge
+graph (local download or GitHub Pages).
 
 ## Environment
 
