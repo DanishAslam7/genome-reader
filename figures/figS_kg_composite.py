@@ -65,8 +65,8 @@ for n in G.nodes:
                  color="white",fontweight="bold",zorder=6)
 axA.set_xlim(min(p[0] for p in pos.values())-.08,max(p[0] for p in pos.values())+.08)
 axA.set_ylim(min(p[1] for p in pos.values())-.08,max(p[1] for p in pos.values())+.08)
-fig.text(0.02,0.975,"A",fontsize=13,fontweight="bold",color=INK)
-fig.text(0.055,0.975,"The biophysical knowledge graph — 1,757 nodes, 7,265 edges",
+fig.text(0.02,0.975,"a",fontsize=13,fontweight="bold",color=INK)
+fig.text(0.055,0.975,"The biophysical knowledge graph: 1,757 nodes, 7,265 edges",
          fontsize=11.5,fontweight="bold",color=INK)
 fig.text(0.055,0.958,"the actual 32-organism graph, force-directed; organisms tinted by kingdom "
          "(clades cluster)",fontsize=8.4,color=MUTED)
@@ -95,7 +95,7 @@ def panel(x,w,y,h,letter,title,ec=RULE):
     axS.text(x+6.0,y+h-4.0,title,fontsize=9.2,fontweight="bold",color=INK,va="center")
 
 # ---- B (left) : anti-leak context extraction ----
-panel(1.5,55,5,90,"B","Per-window features — context nodes only (anti-leak)",ec=RED)
+panel(1.5,55,5,90,"b","Per-window features: context nodes only (anti-leak)",ec=RED)
 axS.text(4.5,84,"one training window:",fontsize=7.8,fontweight="bold",color=INK)
 nodebox(17,74,22,8,"kingdom node","used","#efe9f6",KC["protista"],fs=7.4)
 nodebox(17,60,22,8,"organism node","used","#efe9f6",KC["animalia"],fs=7.4)
@@ -114,7 +114,7 @@ flow((28,60),(32,62),PARAMc,1.2)
 flow((43.5,44),(43.5,29.5),PARAMc,1.2)
 
 # ---- C (right) : fusion ----
-panel(58.5,40,5,90,"C","Fusion into the trunk",ec=PARAMc)
+panel(58.5,40,5,90,"c","Fusion into the trunk",ec=PARAMc)
 chain=[(65,76,"kg_features","76","#fbe9f3"),(78,76,"LayerNorm","",  "white"),(91,76,"Dense","96","white")]
 for i,(cx,cy,lab,sub,fc) in enumerate(chain):
     nodebox(cx,cy,12,8,lab,sub,fc,PARAMc,tc=("#a01b3a" if fc!="white" else INK),fs=7.0)
@@ -128,7 +128,7 @@ flow((85,56),(90,52),PARAMc,1.1); flow((83,44),(89,48),BIOc,1.1)
 axS.text(78,30,"→ Dense 192 → shared representation → heads",ha="center",va="center",
          fontsize=7.0,color=MUTED)
 
-fig.text(0.5,0.006,"KG branch active only in-distribution — withheld from every cross-kingdom "
+fig.text(0.5,0.006,"KG branch active only in-distribution; withheld from every cross-kingdom "
          "transfer result (cohort-derived features leak across a held-out kingdom).",
          ha="center",fontsize=7.6,color=MUTED,style="italic")
 
