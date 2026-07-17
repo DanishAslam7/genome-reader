@@ -70,6 +70,33 @@ for b in ["complexity","startstop","sequence","kg"]: e(b,"fuse")
 for hh in ["element","human","biogroup","coding","pair","coarse","utr"]: e("shared",hh)
 e("shared","organism","grl"); e("shared","kingdom","grl")
 
+
+NOTES={
+ "profile":"The input the whole model rests on: physics, not letters — 7 mechanical parameters, no bases.",
+ "scale":"A disclosed fixed prior. The model is handed this weighting, never credited with discovering it.",
+ "stem":"Lifts the 7 physical channels into a 256-d feature space.",
+ "stage1":"Downsamples position while a residual block mixes local context.",
+ "stage2":"Second downsample — the receptive field widens over the window.",
+ "stage3":"Final trunk features, just before pooling.",
+ "pool":"Collapses the position axis into one fixed-length vector.",
+ "fuse":"Joins the pooled trunk with the two always-on derived branches.",
+ "shared":"The single representation every head reads — made species-invariant by the adversaries.",
+ "complexity":"Hand-derived per-channel statistics; always on.",
+ "startstop":"Left / centre / right contrast windows; always on.",
+ "sequence":"Optional. Its benefit shrinks, then reverses, with evolutionary distance.",
+ "kg":"Cohort-derived context; leaks across kingdoms, so switched off for every transfer result.",
+ "element":"The reported output: which genomic site this window is.",
+ "organism":"Adversary — trains the trunk to FORGET the organism. That is what makes features transfer.",
+ "kingdom":"Adversary at kingdom level — the direct driver of cross-kingdom universality.",
+ "human":"Auxiliary, human-only labels (UTR / enhancer boundaries).",
+ "biogroup":"Auxiliary grouping head; part of the multitask signal shaping the trunk.",
+ "coding":"Auxiliary coding / non-coding signal.",
+ "pair":"Auxiliary start-vs-stop contrast.",
+ "coarse":"Auxiliary coarse element grouping.",
+ "utr":"Auxiliary UTR-subtype head.",
+}
+for l in L: l["note"]=NOTES.get(l["id"],"")
+
 arch=dict(layers=L, edges=E)
 json.dump(arch, open("figures/arch_3d.json","w"))
 tpl=open("figures/model_3d_template.html").read()
