@@ -3,7 +3,7 @@
 Figure 6 - mechanism: which physical property encodes which element.
 
 (a) drop-one channel ablation, 7 parameters x 5 elements, 3 seeds. DIVERGING scale
-    centred on zero because the negatives are real (removing H-bond IMPROVES exon
+    centred on zero because the negatives are real (removing hbond IMPROVES exon
     boundaries). Two hues + neutral gray midpoint; no hue at the midpoint.
 (b) keep-only: every parameter alone collapses to chance -> the code is distributed.
 
@@ -19,9 +19,9 @@ from matplotlib.patches import Rectangle
 
 # ── data: 3-seed mean / sd (param_ablation_out/*.json; seeds 42/123/777) ──────
 PARAMS = ["bbone", "bp", "hbond", "inter", "intra", "sol", "stack"]
-PNAMES = ["backbone", "base pair", "H-bond", "inter*", "intra", "solvation", "stacking"]
+PNAMES = ["bbone", "bp", "hbond", "inter", "intra", "sol", "stack"]
 # Fixed input channel weights (Section 2.6 / S1). Shown on the y-axis so the two
-# controls in Section 3.5 read straight off the figure: stack shares H-bond's ×2.0 but
+# controls in Section 3.5 read straight off the figure: stack shares hbond's ×2.0 but
 # is worth ~0 at promoters; inter is weighted lowest (×1.0) yet dominates start codons.
 WEIGHT = {"bbone": 1.4, "bp": 1.4, "hbond": 2.0, "inter": 1.0,
           "intra": 1.4, "sol": 1.4, "stack": 2.0}
@@ -110,7 +110,7 @@ axA.tick_params(axis="both", length=0, pad=5)
 for s in axA.spines.values(): s.set_visible(False)
 axA.set_title("a   Drop-one: accuracy lost when a parameter is removed",
               fontsize=9.2, color=INK, loc="left", pad=40, fontweight="bold")
-axA.text(0, 1.20, "×n beside each parameter = its fixed input weight (Section 2.6): H-bond and "
+axA.text(0, 1.20, "×n beside each parameter = its fixed input weight (Section 2.6): hbond and "
                   "stacking ×2.0, inter ×1.0.", transform=axA.transAxes,
          fontsize=6.4, color=MUTED, va="bottom")
 
@@ -156,7 +156,7 @@ axB.spines["bottom"].set_color(GRID)
 axB.set_title("b   Keep-only: no parameter\n     carries the code alone",
               fontsize=9.2, color=INK, loc="left", pad=10, fontweight="bold")
 
-fig.text(0.088, 0.055, "Outlined cell (H-bond × promoter, 0.447 ± 0.058) is the only one whose error bars clear every rival - every other top-ranked cell overlaps its runner-up.",
+fig.text(0.088, 0.055, "Outlined cell (hbond × promoter, 0.447 ± 0.058) is the only one whose error bars clear every rival - every other top-ranked cell overlaps its runner-up.",
          fontsize=6.6, color=INK)
 fig.text(0.088, 0.012, "* inter is the only tetranucleotide-derived parameter; the other six come from the trinucleotide table.",
          fontsize=6.6, color=MUTED)

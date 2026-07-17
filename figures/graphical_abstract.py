@@ -47,7 +47,7 @@ ax.plot(hx,72+2.4*np.sin(xs*9+math.pi),color="#9bb8e6",lw=2.2)
 for i in range(0,120,10):
     ax.plot([hx[i]]*2,[72+2.4*np.sin(xs[i]*9),72+2.4*np.sin(xs[i]*9+math.pi)],color=RULE,lw=1)
 ax.text(16,72,"→",fontsize=16,color=MUTED,va="center",ha="center")
-labs=["H-bond","stacking","solvation","base-pair","intra-bp","backbone","inter-bp"]
+labs=["hbond","stack","sol","bp","intra","bbone","inter"]
 cols=[HB,HB,"#b8c0cc","#b8c0cc","#b8c0cc","#b8c0cc",BIO]
 t=np.linspace(0,1,160)
 for i,(lb,c) in enumerate(zip(labs,cols)):
