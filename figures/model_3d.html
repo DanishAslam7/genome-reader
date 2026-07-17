@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Architecture — 3D</title>
+<meta name="description" content="Interactive 3D model of the multitask convolutional architecture.">
+</head>
+<body>
+<style>
+  :root{
+    --bg:#f3f2f8; --panel:rgba(255,255,255,.76); --ink:#191524; --muted:#68617d; --line:#dcd7e8;
+    --hair:rgba(20,16,32,.08); --canvas-top:#f6f5fb; --canvas-bot:#e9e7f2; --chip:rgba(20,16,32,.05);
+    --g-bio:#2f7fe0; --g-prior:#e0405f; --g-seq:#12a95f; --g-kg:#c2418c; --g-shared:#3a3450;
+    --g-elem:#f59e0b; --g-grl:#e0405f; --g-aux:#8b8598; --label:#241f33; --label-bg:rgba(255,255,255,.85);
+    --shadow:0 8px 30px rgba(40,20,60,.14);
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0c0a12; --panel:rgba(24,20,34,.74); --ink:#efeaf7; --muted:#968fab; --line:rgba(255,255,255,.12);
+    --hair:rgba(255,255,255,.07); --canvas-top:#120f1e; --canvas-bot:#09070f; --chip:rgba(255,255,255,.07);
+    --g-bio:#4ba2ff; --g-prior:#ff5d78; --g-seq:#22c778; --g-kg:#f062a8; --g-shared:#d7d1e6;
+    --g-elem:#ffb62e; --g-grl:#ff5d78; --g-aux:#8b8598; --label:#efeaf7; --label-bg:rgba(14,11,22,.74);
+    --shadow:0 10px 34px rgba(0,0,0,.5);
+  }}
+  :root[data-theme="light"]{
+    --bg:#f3f2f8; --panel:rgba(255,255,255,.76); --ink:#191524; --muted:#68617d; --line:#dcd7e8;
+    --hair:rgba(20,16,32,.08); --canvas-top:#f6f5fb; --canvas-bot:#e9e7f2; --chip:rgba(20,16,32,.05);
+    --g-bio:#2f7fe0; --g-prior:#e0405f; --g-seq:#12a95f; --g-kg:#c2418c; --g-shared:#3a3450;
+    --g-elem:#f59e0b; --g-grl:#e0405f; --g-aux:#8b8598; --label:#241f33; --label-bg:rgba(255,255,255,.85);
+    --shadow:0 8px 30px rgba(40,20,60,.14);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c0a12; --panel:rgba(24,20,34,.74); --ink:#efeaf7; --muted:#968fab; --line:rgba(255,255,255,.12);
+    --hair:rgba(255,255,255,.07); --canvas-top:#120f1e; --canvas-bot:#09070f; --chip:rgba(255,255,255,.07);
+    --g-bio:#4ba2ff; --g-prior:#ff5d78; --g-seq:#22c778; --g-kg:#f062a8; --g-shared:#d7d1e6;
+    --g-elem:#ffb62e; --g-grl:#ff5d78; --g-aux:#8b8598; --label:#efeaf7; --label-bg:rgba(14,11,22,.74);
+    --shadow:0 10px 34px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  #stage{position:fixed; inset:0; overflow:hidden; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  #cv{position:absolute; inset:0; display:block; touch-action:none; cursor:grab}
+  #cv.dragging{cursor:grabbing}
+  .mono{font-family:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace; font-variant-numeric:tabular-nums}
+
+  .head{position:absolute; top:22px; left:26px; max-width:min(40ch,50vw); pointer-events:none}
+  .eyebrow{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600}
+  .title{font-size:clamp(19px,2.9vw,27px); font-weight:680; line-height:1.06; margin:.28em 0 .3em;
+    text-wrap:balance; letter-spacing:-.01em}
+  .sub{font-size:13px; color:var(--muted); line-height:1.45}
+  .sub b{color:var(--ink); font-weight:600}
+
+  .rail{position:absolute; top:22px; right:22px; width:262px; max-height:calc(100vh - 44px); overflow-y:auto;
+    padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    backdrop-filter:blur(14px) saturate(1.2); -webkit-backdrop-filter:blur(14px) saturate(1.2);
+    box-shadow:var(--shadow); font-size:12.5px}
+  .rail h2{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 9px; font-weight:700}
+  .grp+ .grp{margin-top:14px; padding-top:13px; border-top:1px solid var(--hair)}
+  .legrow{display:flex; align-items:center; gap:9px; padding:2.5px 0}
+  .sw{width:13px; height:13px; border-radius:3px; flex:none; box-shadow:0 0 0 1px rgba(255,255,255,.3) inset}
+  .legrow .nm{flex:1} .legrow .ct{color:var(--muted); font-size:11px}
+  .toggle{display:flex; align-items:center; gap:9px; padding:6px 0; cursor:pointer; user-select:none}
+  .toggle input{appearance:none; width:34px; height:19px; border-radius:11px; background:var(--line);
+    position:relative; cursor:pointer; transition:background .18s; flex:none}
+  .toggle input:checked{background:var(--g-bio)}
+  .toggle input::after{content:""; position:absolute; top:2px; left:2px; width:15px; height:15px;
+    border-radius:50%; background:#fff; transition:transform .18s; box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .toggle input:checked::after{transform:translateX(15px)}
+  .toggle small{display:block; color:var(--muted); font-size:10.5px; line-height:1.2}
+  .toggle .lab{flex:1}
+  .readout .rname{font-size:15px; font-weight:700; letter-spacing:-.01em; line-height:1.1}
+  .readout .rmeta{font-size:11px; color:var(--muted); margin-top:2px}
+  .readout .rwhy{font-size:11.5px; margin-top:8px; line-height:1.5; color:var(--ink)}
+  .placeholder{font-size:11.5px; color:var(--muted); line-height:1.5}
+  .clearbtn{margin-top:10px; font-size:11px; color:var(--g-bio); background:none; border:none; padding:0;
+    cursor:pointer; text-decoration:underline}
+  .note{margin-top:13px; padding-top:12px; border-top:1px solid var(--hair); font-size:11px; line-height:1.5; color:var(--muted)}
+  .note b{color:var(--ink); font-weight:600}
+  .hint{position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11.5px; color:var(--muted);
+    background:var(--panel); padding:6px 14px; border:1px solid var(--line); border-radius:999px;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:none}
+  .hint .mono{color:var(--ink)}
+  #tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .12s; background:var(--label-bg);
+    border:1px solid var(--line); border-radius:9px; padding:7px 10px; font-size:12px; box-shadow:var(--shadow);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:5; max-width:240px}
+  #tip .tname{font-weight:680} #tip .tmeta{color:var(--muted); font-size:11px; margin-top:1px}
+  @media (max-width:820px){ .rail{width:216px; right:12px; top:12px; max-height:calc(100vh - 24px)}
+    .head{max-width:60vw; top:14px; left:16px} .hint{display:none} }
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+
+<div id="stage">
+  <canvas id="cv" aria-label="Interactive 3D model of the multitask convolutional architecture: a biophysical profile flows through a fixed channel scaling, a ConvNeXt trunk that downsamples 475 to 119 positions, into a 176-dimensional shared representation read by nine heads, two of them gradient-reversal adversaries that enforce organism and kingdom invariance. Drag to rotate, click a layer to inspect it."></canvas>
+
+  <div class="head">
+    <div class="eyebrow">Model architecture · live</div>
+    <div class="title">How the network reads DNA as physics</div>
+    <div class="sub">A biophysical profile flows through the trunk to a shared representation; adversaries
+      erase species identity. <b>Drag to rotate · click a layer.</b></div>
+  </div>
+
+  <aside class="rail" aria-label="Legend, controls and layer readout">
+    <div class="grp">
+      <h2>Stages</h2>
+      <div class="legrow"><span class="sw" style="background:var(--g-bio)"></span><span class="nm">Profile trunk</span></div>
+      <div class="legrow"><span class="sw" style="background:var(--g-prior)"></span><span class="nm">Fixed prior scaling</span></div>
+      <div class="legrow"><span class="sw" style="background:var(--g-seq)"></span><span class="nm">Sequence branch</span><span class="ct">optional</span></div>
+      <div class="legrow"><span class="sw" style="background:var(--g-kg)"></span><span class="nm">Knowledge graph</span><span class="ct">off·transfer</span></div>
+      <div class="legrow"><span class="sw" style="background:var(--g-elem)"></span><span class="nm">Element head</span><span class="ct">reported</span></div>
+      <div class="legrow"><span class="sw" style="background:var(--g-grl)"></span><span class="nm">Adversary (GRL)</span></div>
+      <div class="legrow"><span class="sw" style="background:var(--g-aux)"></span><span class="nm">Auxiliary heads</span></div>
+    </div>
+
+    <div class="grp readout" id="readout">
+      <h2>Selected layer</h2>
+      <div class="placeholder">Click any block to see its shape, parameters, and why it's there.</div>
+    </div>
+
+    <div class="grp">
+      <h2>Explore</h2>
+      <label class="toggle"><input type="checkbox" id="tSeq"><span class="lab">Sequence branch<small>+424k params · +1.08 in-dist, −6.5 prok</small></span></label>
+      <label class="toggle"><input type="checkbox" id="tKG"><span class="lab">Knowledge-graph branch<small>off for every transfer result</small></span></label>
+      <label class="toggle"><input type="checkbox" id="tGRL" checked><span class="lab">Show gradient reversal<small>red = adversarial signal flowing back</small></span></label>
+      <label class="toggle"><input type="checkbox" id="tSpin" checked><span class="lab">Auto-rotate</span></label>
+    </div>
+
+    <div class="note">
+      The trunk sees <b>only mechanics</b> — seven physical parameters, no nucleotides. The two
+      gradient-reversal heads train the shared features to be <b>species-invariant</b>, which is why the
+      representation transfers across kingdoms. Shapes and parameter counts are read from the trained
+      checkpoint.
+    </div>
+  </aside>
+
+  <div class="hint">drag <span class="mono">rotate</span> · scroll <span class="mono">zoom</span> · click <span class="mono">inspect</span></div>
+  <div id="tip"></div>
+</div>
+
+<script>
+const ARCH = {"layers":[{"id":"profile","name":"Biophysical profile","x":-42,"y":0,"z":0,"group":"bio","shape":"475 \u00d7 7","params":"","role":"input \u00b7 7 mechanical parameters","why":"The only input to the reported model: seven DNA biophysical/mechanical parameters per position (hydrogen-bonding, stacking, solvation, backbone and base-pair geometry) \u2014 with no nucleotide identity. The network reads DNA as a physical object, not a string of letters.","label":"profile","hx":1.5,"hy":9.0,"hz":0.71},{"id":"scale","name":"ParameterScale","x":-35,"y":0,"z":0,"group":"prior","shape":"\u00d7 fixed weights","params":"0 (non-trainable)","role":"fixed prior channel weighting","why":"A non-trainable per-channel multiplier (hbond, stack \u00d72.0; four channels \u00d71.4; inter \u00d71.0) taken from a prior molecular-dynamics study and fixed before any training. Disclosed so the model is never credited with 'discovering' a weighting it was handed.","label":"\u00d7 scale","hx":0.6,"hy":9.0,"hz":0.71},{"id":"stem","name":"Stem convolution","x":-28,"y":0,"z":0,"group":"bio","shape":"k=7 \u2192 256","params":"12,800","role":"lift 7 \u2192 256 channels","why":"","label":"stem","hx":1.5,"hy":9.0,"hz":4.8},{"id":"stage1","name":"ConvNeXt stage 1","x":-20,"y":0,"z":0,"group":"bio","shape":"475 \u2192 238","params":"","role":"downsample \u00d72","why":"Three ConvNeXt-style stages, one block each: depthwise k=7 conv \u2192 LayerNorm \u2192 Dense 1024 (4\u00d7 expand) \u2192 Dense 256, with a residual connection. Stride-2 downsampling halves the position axis at each stage.","label":"stage 1","hx":1.5,"hy":5.01,"hz":4.8},{"id":"stage2","name":"ConvNeXt stage 2","x":-12,"y":0,"z":0,"group":"bio","shape":"238 \u2192 119","params":"","role":"downsample \u00d72","why":"","label":"stage 2","hx":1.5,"hy":3.0,"hz":4.8},{"id":"stage3","name":"ConvNeXt stage 3","x":-4,"y":0,"z":0,"group":"bio","shape":"119 \u00d7 256","params":"trunk \u2248 1.79 M","role":"final trunk stage","why":"","label":"stage 3","hx":1.5,"hy":3.0,"hz":4.8},{"id":"pool","name":"Pool \u2192 dense","x":6,"y":0,"z":0,"group":"bio","shape":"\u2192 128","params":"98,688","role":"collapse positions","why":"","label":"pool","hx":1.6,"hy":2.21,"hz":2.21},{"id":"fuse","name":"Fuse","x":14,"y":0,"z":0,"group":"bio","shape":"\u2295 \u2192 176","params":"62,288","role":"concat trunk + derived branches","why":"The pooled trunk is concatenated with the two always-on derived branches to form the 176-dimensional shared vector.","label":"fuse","hx":1.6,"hy":2.74,"hz":2.74},{"id":"shared","name":"Shared representation","x":22,"y":0,"z":0,"group":"shared","shape":"176-dim","params":"","role":"read by all nine heads","why":"One vector feeds every head. Because two heads are adversarial (right), the trunk is pushed to make this vector predict elements while NOT revealing which organism or kingdom a window came from \u2014 the origin of cross-species transfer.","label":"SHARED","hx":1.6,"hy":2.74,"hz":2.74},{"id":"complexity","name":"Profile-complexity branch","x":5,"y":-12,"z":6,"group":"bio","shape":"14 stats/ch \u2192 48","params":"","role":"derived \u00b7 always on","why":"","label":"","hx":1.6,"hy":1.33,"hz":1.33},{"id":"startstop","name":"Start/stop-contrast branch","x":5,"y":-17,"z":-5,"group":"bio","shape":"L/C/R windows \u2192 32","params":"","role":"derived \u00b7 always on","why":"","label":"","hx":1.6,"hy":1.15,"hz":1.15},{"id":"sequence","name":"Sequence branch","x":0,"y":12,"z":7,"group":"seq","shape":"one-hot 501\u00d74 \u2192 96","params":"+424,256","role":"optional ablation arm","why":"Not in the reported model. Added, it costs +19.3% parameters and buys +1.08 pp element accuracy in-distribution \u2014 but 0.00 on an unseen diatom lineage and \u22126.5 pp on prokaryotes. Sequence's value decays with evolutionary distance and can turn negative; biophysics does not.","label":"sequence","hx":1.5,"hy":9.44,"hz":0.67},{"id":"kg","name":"Knowledge-graph branch","x":5,"y":17,"z":-6,"group":"kg","shape":"context nodes \u2192 48","params":"","role":"off for all transfer","why":"Injects organism/kingdom context-node features. Cohort-derived, so it leaks across a held-out kingdom \u2014 switched OFF for every cross-kingdom and external result. Contributes +1.38 pp only in-distribution.","label":"KG","hx":1.6,"hy":1.33,"hz":1.33},{"id":"element","name":"Element head","x":34,"y":0,"z":0,"group":"elem","shape":"5 classes","params":"loss \u00d72.5","role":"REPORTED \u2014 the target","why":"The only head reported in the paper: promoter, gene and exon boundaries, start and stop codons. It reads element identity from the species-invariant shared representation.","label":"element","hx":1.7,"hy":1.75,"hz":1.75},{"id":"organism","name":"Organism head","x":31,"y":8,"z":6,"group":"grl","shape":"32 classes","params":"loss \u00d71.0 \u00b7 GRL \u03bb=0.005","role":"adversary (gradient reversal)","why":"Gradient reversal: on backprop its gradient is negated, so the trunk is trained to FAIL at telling organisms apart. This erases organism identity from the features \u2014 the mechanism behind cross-organism generalization. Red particles show the reversed signal flowing back.","label":"organism","hx":1.1,"hy":2.6,"hz":2.6},{"id":"kingdom","name":"Kingdom head","x":31,"y":12,"z":-4,"group":"grl","shape":"4 classes","params":"loss \u00d70.5 \u00b7 GRL \u03bb=0.08","role":"adversary (gradient reversal)","why":"The same adversary at kingdom level, with a stronger \u03bb=0.08. It is the direct engine of cross-KINGDOM universality \u2014 the paper's headline transfer result.","label":"kingdom","hx":1.1,"hy":1.2,"hz":1.2},{"id":"human","name":"Human UTR/enhancer head","x":31,"y":-7,"z":6,"group":"aux","shape":"3 classes","params":"loss \u00d71.0","role":"auxiliary \u00b7 masked to human","why":"","label":"","hx":1.1,"hy":1.15,"hz":1.15},{"id":"biogroup","name":"Biological-group head","x":31,"y":-11,"z":-4,"group":"aux","shape":"4 classes","params":"loss \u00d70.8","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.2,"hz":1.2},{"id":"coding","name":"Coding detector","x":31,"y":-15,"z":6,"group":"aux","shape":"2 classes","params":"loss \u00d70.5","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.1,"hz":1.1},{"id":"pair","name":"Start/stop-pair head","x":31,"y":16,"z":6,"group":"aux","shape":"2 classes","params":"loss \u00d70.4","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.1,"hz":1.1},{"id":"coarse","name":"Coarse-element head","x":31,"y":-19,"z":-5,"group":"aux","shape":"7 classes","params":"loss \u00d70.3","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.35,"hz":1.35},{"id":"utr","name":"UTR-subtype head","x":31,"y":20,"z":-4,"group":"aux","shape":"2 classes","params":"loss \u00d70.2","role":"auxiliary","why":"","label":"","hx":1.1,"hy":1.1,"hz":1.1}],"edges":[{"s":"profile","t":"scale","k":"fwd"},{"s":"scale","t":"stem","k":"fwd"},{"s":"stem","t":"stage1","k":"fwd"},{"s":"stage1","t":"stage2","k":"fwd"},{"s":"stage2","t":"stage3","k":"fwd"},{"s":"stage3","t":"pool","k":"fwd"},{"s":"pool","t":"fuse","k":"fwd"},{"s":"fuse","t":"shared","k":"fwd"},{"s":"complexity","t":"fuse","k":"fwd"},{"s":"startstop","t":"fuse","k":"fwd"},{"s":"sequence","t":"fuse","k":"fwd"},{"s":"kg","t":"fuse","k":"fwd"},{"s":"shared","t":"element","k":"fwd"},{"s":"shared","t":"human","k":"fwd"},{"s":"shared","t":"biogroup","k":"fwd"},{"s":"shared","t":"coding","k":"fwd"},{"s":"shared","t":"pair","k":"fwd"},{"s":"shared","t":"coarse","k":"fwd"},{"s":"shared","t":"utr","k":"fwd"},{"s":"shared","t":"organism","k":"grl"},{"s":"shared","t":"kingdom","k":"grl"}]};
+(function(){
+  const cv=document.getElementById("cv"), ctx=cv.getContext("2d"), tip=document.getElementById("tip");
+  const stage=document.getElementById("stage"), readoutEl=document.getElementById("readout"), root=document.documentElement;
+  const css=v=>getComputedStyle(root).getPropertyValue(v).trim();
+  let C={}, BG={};
+  function readTheme(){
+    C={bio:css("--g-bio"),prior:css("--g-prior"),seq:css("--g-seq"),kg:css("--g-kg"),
+       shared:css("--g-shared"),elem:css("--g-elem"),grl:css("--g-grl"),aux:css("--g-aux")};
+    BG={top:css("--canvas-top"),bot:css("--canvas-bot"),label:css("--label"),labelbg:css("--label-bg"),line:css("--line")};
+  }
+  readTheme();
+  function hex2rgb(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+  function shade(hex,f){const[r,g,b]=hex2rgb(hex);return`rgb(${Math.round(r*f)},${Math.round(g*f)},${Math.round(b*f)})`;}
+
+  const L=ARCH.layers, ED=ARCH.edges;
+  const byId={}; L.forEach(l=>byId[l.id]=l);
+  function applyColors(){ L.forEach(l=>l.col=C[l.group]||C.bio); }
+  applyColors();
+
+  let W=0,H=0,DPR=1;
+  function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=stage.clientWidth;H=stage.clientHeight;
+    cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+"px";cv.style.height=H+"px";ctx.setTransform(DPR,0,0,DPR,0,0);}
+  window.addEventListener("resize",resize);
+
+  const reduce=window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  let ay=-0.62, ax=-0.28, zoom=1, spin=!reduce, tt=0;
+  let showSeq=false, showKG=false, showGRL=true;
+  const $=id=>document.getElementById(id);
+  $("tSeq").addEventListener("change",e=>showSeq=e.target.checked);
+  $("tKG").addEventListener("change",e=>showKG=e.target.checked);
+  $("tGRL").addEventListener("change",e=>showGRL=e.target.checked);
+  const tSpin=$("tSpin"); if(reduce) tSpin.checked=false; tSpin.addEventListener("change",e=>spin=e.target.checked);
+
+  function vis(l){ if(l.group==="seq"&&!showSeq)return false; if(l.group==="kg"&&!showKG)return false; return true; }
+  function edgeVis(e){ const a=byId[e.s],b=byId[e.t]; if(!vis(a)||!vis(b))return false;
+    if(e.k==="grl"&&!showGRL)return false; return true; }
+
+  const rot=(x,y,z)=>{const cA=Math.cos(ay),sA=Math.sin(ay),cB=Math.cos(ax),sB=Math.sin(ax);
+    let x1=x*cA+z*sA, z1=-x*sA+z*cA; return [x1, y*cB - z1*sB, y*sB + z1*cB];};
+  let CX,CY,S;
+  function proj(v){const persp=6/(6-v[2]*0.14);return [CX+v[0]*S*persp, CY - v[1]*S*persp, v[2]];}
+  function center2d(l){return proj(rot(l.x,l.y,l.z));}
+
+  // cube corners + faces
+  const CS=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  const FACES=[{i:[4,5,6,7],n:[0,0,1]},{i:[0,3,2,1],n:[0,0,-1]},{i:[1,2,6,5],n:[1,0,0]},
+               {i:[0,4,7,3],n:[-1,0,0]},{i:[3,7,6,2],n:[0,1,0]},{i:[0,1,5,4],n:[0,-1,0]}];
+  const LIGHT=(()=>{const v=[0.35,0.6,0.72],m=Math.hypot(...v);return v.map(x=>x/m);})();
+
+  function drawBox(l,alpha,hi){
+    const pc=CS.map(c=>proj(rot(l.x+c[0]*l.hx, l.y+c[1]*l.hy, l.z+c[2]*l.hz)));
+    const faces=[];
+    for(const f of FACES){ const nr=rot(f.n[0],f.n[1],f.n[2]); if(nr[2]<=0.02) continue;
+      const dep=(pc[f.i[0]][2]+pc[f.i[1]][2]+pc[f.i[2]][2]+pc[f.i[3]][2])/4;
+      const br=0.52+0.48*Math.max(0,nr[0]*LIGHT[0]+nr[1]*LIGHT[1]+nr[2]*LIGHT[2]);
+      faces.push({f,dep,br}); }
+    faces.sort((a,b)=>a.dep-b.dep);
+    ctx.globalAlpha=alpha;
+    for(const {f,br} of faces){
+      ctx.beginPath(); f.i.forEach((ci,k)=>{const p=pc[ci]; k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);});
+      ctx.closePath(); ctx.fillStyle=shade(l.col, hi?Math.min(1,br+0.12):br); ctx.fill();
+      ctx.lineWidth=hi?1.6:0.7; ctx.strokeStyle=hi?l.col:"rgba(255,255,255,.28)"; ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  let hover=-1, mx=-1e5, my=-1e5, focus=-1;
+  function renderReadout(i){
+    if(i<0){readoutEl.innerHTML='<h2>Selected layer</h2><div class="placeholder">Click any block to see its '+
+      'shape, parameters, and why it’s there.</div>'; return;}
+    const l=L[i]; let html='<h2>Selected layer</h2>'+
+      '<div class="rname" style="color:'+l.col+'">'+l.name+'</div>'+
+      '<div class="rmeta mono">'+(l.shape||'')+(l.params?'  ·  '+l.params+' params':'')+'</div>'+
+      (l.role?'<div class="rmeta">'+l.role+'</div>':'')+
+      (l.why?'<div class="rwhy">'+l.why+'</div>':'')+
+      '<button class="clearbtn" id="clr">clear</button>';
+    readoutEl.innerHTML=html; $("clr").addEventListener("click",()=>setFocus(-1));
+  }
+  function setFocus(i){focus=i; renderReadout(i);}
+
+  function draw(){
+    CX=W*0.42; CY=H*0.52; S=Math.min(W,H)*0.011*zoom;
+    const g=ctx.createRadialGradient(W/2,H*0.4,0,W/2,H*0.4,Math.max(W,H)*0.8);
+    g.addColorStop(0,BG.top); g.addColorStop(1,BG.bot); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    // edges (behind)
+    for(const e of ED){ if(!edgeVis(e))continue; const a=center2d(byId[e.s]), b=center2d(byId[e.t]);
+      ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]);
+      ctx.strokeStyle=e.k==="grl"?C.grl:BG.line; ctx.lineWidth=e.k==="grl"?1.4:1; ctx.globalAlpha=e.k==="grl"?0.5:0.6; ctx.stroke(); }
+    ctx.globalAlpha=1;
+
+    // boxes far->near
+    const idx=L.map((_,i)=>i).filter(i=>vis(L[i]));
+    idx.forEach(i=>{L[i]._d=center2d(L[i])[2];});
+    idx.sort((a,b)=>L[a]._d-L[b]._d);
+    let best=-1,bestD=18*18;
+    for(const i of idx){ const l=L[i]; const hi=(focus===i)||(focus<0&&hover===i);
+      drawBox(l, focus>=0&&focus!==i?0.35:1, hi);
+      const c=center2d(l); const dx=c[0]-mx,dy=c[1]-my,dd=dx*dx+dy*dy;
+      if(dd<bestD){best=i;bestD=dd;} }
+    hover=best;
+
+    // particles along edges
+    ctx.globalAlpha=1;
+    for(const e of ED){ if(!edgeVis(e))continue; const grl=e.k==="grl";
+      const a=center2d(byId[e.s]), b=center2d(byId[e.t]);
+      const src=grl?b:a, dst=grl?a:b, col=grl?C.grl:(byId[e.s].col||C.bio);
+      const nP=grl?3:2;
+      for(let k=0;k<nP;k++){ let p=((tt*(grl?0.6:0.5)+k/nP)%1);
+        const x=src[0]+(dst[0]-src[0])*p, y=src[1]+(dst[1]-src[1])*p;
+        ctx.beginPath(); ctx.arc(x,y,grl?2.2:1.9,0,6.2832); ctx.fillStyle=col;
+        ctx.globalAlpha=0.85*(1-Math.abs(p-0.5)*0.7); ctx.fill(); } }
+    ctx.globalAlpha=1;
+
+    // labels
+    ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.font="600 11px system-ui,sans-serif";
+    for(const i of idx){ const l=L[i]; if(!l.label) continue; const c=center2d(l);
+      const off=(l.hy)*S*1.0+13; const tx=c[0], ty=c[1]-off, w=ctx.measureText(l.label).width;
+      ctx.globalAlpha=focus>=0&&focus!==i?0.3:0.95;
+      ctx.fillStyle=BG.labelbg; rr(tx-w/2-4,ty-8,w+8,16,4); ctx.fill();
+      ctx.fillStyle=(l.group==="elem"||l.group==="grl")?l.col:BG.label; ctx.fillText(l.label,tx,ty); }
+    ctx.globalAlpha=1;
+
+    if(hover>=0){ const l=L[hover]; tip.innerHTML='<div class="tname" style="color:'+l.col+'">'+l.name+
+      '</div><div class="tmeta mono">'+(l.shape||l.role||'')+(focus<0?' · click':'')+'</div>';
+      const c=center2d(l); tip.style.left=(c[0]+14)+"px"; tip.style.top=(c[1]-10)+"px"; tip.style.opacity=1;
+      cv.style.cursor=dragging?"grabbing":"pointer";
+    } else {tip.style.opacity=0; cv.style.cursor=dragging?"grabbing":"grab";}
+
+    tt+=0.0045; if(spin&&!dragging&&focus<0) ay+=0.0016;
+    requestAnimationFrame(draw);
+  }
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+  let dragging=false,lx=0,ly=0,moved=false;
+  cv.addEventListener("pointerdown",e=>{dragging=true;moved=false;lx=e.clientX;ly=e.clientY;
+    const r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener("pointermove",e=>{const r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;
+    if(dragging){if(Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly)>4)moved=true;
+      ay+=(e.clientX-lx)*0.008;ax+=(e.clientY-ly)*0.008;ax=Math.max(-1.35,Math.min(1.35,ax));lx=e.clientX;ly=e.clientY;}});
+  cv.addEventListener("pointerup",()=>{if(dragging&&!moved)setFocus(hover>=0?hover:-1);dragging=false;});
+  cv.addEventListener("pointercancel",()=>dragging=false);
+  cv.addEventListener("pointerleave",()=>{mx=-1e5;my=-1e5;});
+  cv.addEventListener("wheel",e=>{e.preventDefault();zoom*=Math.exp(-e.deltaY*0.0012);zoom=Math.max(0.5,Math.min(3.5,zoom));},{passive:false});
+
+  const reTheme=()=>{readTheme();applyColors();};
+  new MutationObserver(reTheme).observe(root,{attributes:true,attributeFilter:["data-theme"]});
+  window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",reTheme);
+  resize(); requestAnimationFrame(draw);
+})();
+</script>
+
+</body>
+</html>

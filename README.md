@@ -12,6 +12,9 @@ which physical property encodes which element.
 > **▶ Interactive 3D knowledge graph (live):**
 > https://danishaslam7.github.io/genome-reader/figures/kg_3d.html — rotate the actual 1,757-node graph
 > in your browser.
+> **▶ Interactive 3D model architecture (live):**
+> https://danishaslam7.github.io/genome-reader/figures/model_3d.html — rotate the network, click any
+> layer, toggle the sequence branch and the gradient-reversal adversaries.
 >
 > **Repository:** https://github.com/DanishAslam7/genome-reader
 > **Archived code:** https://doi.org/10.5281/zenodo.21400171 (Zenodo concept DOI — always resolves to
@@ -43,6 +46,7 @@ code/         model, baselines, and all evaluation scripts (flat layout — they
 profiling/    biophysical profiling pipeline (run_profile_batch.py + asyncPython*.py)
 figures/      one script per figure; run to regenerate the PDFs/PNGs
   kg_3d.html                      interactive 3D knowledge graph (self-contained; see below)
+  model_3d.html                   interactive 3D model architecture (self-contained; see below)
   figS_knowledge_graph.py         KG schema + context branch (how the KG feeds the model)
   figS_kg_render.py / figS_kg_3d.py  2D and 3D force-directed renders of the real KG
   phylopic/   public-domain organism silhouettes for Figure 1 (see CREDITS.json)
@@ -112,6 +116,13 @@ quantitative).
 - **Regenerate:** `python figures/figS_kg_3d.py` recomputes the layout from the knowledge-graph CSVs
   (`kg_nodes.csv` / `kg_edges.csv`, built by `code/build_knowledge_graph.py`) and rewrites both the
   static stills and the data embedded in the page.
+
+`figures/model_3d.html` is a self-contained, rotatable 3D model of the network architecture. Drag to
+rotate, scroll to zoom, click any layer to read its shape/parameters/role, and use the toggles to add
+the sequence branch or highlight the two gradient-reversal adversaries (organism λ=0.005, kingdom
+λ=0.08) that make the shared representation species-invariant. Every shape and parameter count is read
+from the trained checkpoint; regenerate with `python figures/model_3d_build.py`. Same view options as
+the knowledge graph (local download or GitHub Pages).
 
 ## Environment
 
