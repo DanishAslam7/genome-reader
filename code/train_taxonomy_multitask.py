@@ -119,12 +119,12 @@ ELEMENT_COARSE = {
     "5utre": "utr5",
     "3utrs": "utr3",
     "3utre": "utr3",
-    # NOTE: "intron_boundary" is a legacy misnomer — ens/ene are ENHANCER start/end
-    # (extracted from total_*_enhancers_; see build_sequence_manifest.py). The name is
-    # kept only because it is frozen in the deposited label schemas / trained weights;
-    # do not rename without regenerating those. The 14-element vocabulary has no intron class.
-    "ens": "intron_boundary",
-    "ene": "intron_boundary",
+    # ens/ene are ENHANCER start/end (extracted from total_*_enhancers_; see
+    # build_sequence_manifest.py). Renamed in-place from the legacy "intron_boundary":
+    # its slot in COARSE_ELEMENT_ORDER is unchanged, so the class index is identical and
+    # the v1.0 deposited weights load and evaluate the same. No intron class exists.
+    "ens": "enhancer_boundary",
+    "ene": "enhancer_boundary",
     "es": "exon_boundary",
     "ee": "exon_boundary",
     "exon_boundary": "exon_boundary",
@@ -169,7 +169,7 @@ COARSE_ELEMENT_ORDER = [
     "regulatory",
     "utr5",
     "utr3",
-    "intron_boundary",
+    "enhancer_boundary",
     "exon_boundary",
     "coding",
 ]
